@@ -6,7 +6,7 @@ public class Driver {
     public static void main(String[] args) {
         //Size of window
         int width = 1000;
-        int height = 1000;
+        int height = 1100;
         Model m = new Model();
         View v = new View();
         Controller c = new Controller(m, v);

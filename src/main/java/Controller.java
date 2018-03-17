@@ -19,6 +19,7 @@ import java.util.Random;
 public class Controller {
     Model model;
     View view;
+    int playAreaTop = 100;
 
     public Controller(Model m, View v){
         model = m;
@@ -34,6 +35,7 @@ public class Controller {
         canvas.setPreferredSize(new Dimension(width, height));
         view.setWidth(width);
         view.setHeight(height);
+        view.setPlayAreaTop(playAreaTop);
         frame.setBounds(0, 0, width, height);
         frame.setLocationRelativeTo(null);
         frame.getContentPane().add(canvas);
@@ -69,7 +71,7 @@ public class Controller {
         for (int i = 0; i < 10 ; i++) {
             int size = minShapeSize + rand.nextInt(maxShapeSize-minShapeSize);
             int x = rand.nextInt(view.getWidth()-size) + size/2;
-            int y = rand.nextInt(view.getHeight()-size) + size/2;
+            int y = playAreaTop + rand.nextInt(view.getHeight()-size-playAreaTop) + size/2;
             int colorVal = rand.nextInt(colors.length);
             Shape shape;
             int shapeType = rand.nextInt(2);

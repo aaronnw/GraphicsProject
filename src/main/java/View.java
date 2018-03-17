@@ -17,6 +17,7 @@ public class View implements GLEventListener, MouseListener {
     private int counter = 0;
     private Controller controller;
     private Model model;
+    private int playAreaTop;
 
     public View(){
 
@@ -54,6 +55,7 @@ public class View implements GLEventListener, MouseListener {
         GL2 gl = drawable.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
         setPixelProjection(gl, drawable);
+        drawTargetArea(gl);
         drawShapes(gl);
     }
     private void	setPixelProjection(GL2 gl, GLAutoDrawable drawable)
@@ -63,11 +65,19 @@ public class View implements GLEventListener, MouseListener {
         gl.glLoadIdentity();
         gl.glOrtho(0, drawable.getSurfaceWidth(), drawable.getSurfaceHeight(),0, 0,1);
     }
+    private void drawTargetArea(GL2 gl){
+        gl.glColor3f(Color.WHITE.getR(), Color.WHITE.getG(), Color.WHITE.getB());
+        gl.glLineWidth(5);
+        gl.glBegin(GL.GL_LINES);
+        gl.glVertex2i(0, playAreaTop);
+        gl.glVertex2i(w, playAreaTop);
+        gl.glEnd();
+    }
     private void drawShapes(GL2 gl){
         for (Shape s: model.getShapes()) {
             s.draw(gl);
             //Added some basic movement
-            if(s.getTopPoint() < 0 || s.getBottomPoint() > h){
+            if(s.getTopPoint() < playAreaTop || s.getBottomPoint() > h){
                 s.getMovement().setY(-s.getMovement().getY());
             }
             if(s.getLeftPoint() < 0 || s.getRightPoint() > w){
@@ -88,6 +98,9 @@ public class View implements GLEventListener, MouseListener {
     }
     public void setHeight(int h){
         this.h = h;
+    }
+    public void setPlayAreaTop(int top){
+        playAreaTop = top;
     }
 
     public void mouseClicked(MouseEvent e) {
