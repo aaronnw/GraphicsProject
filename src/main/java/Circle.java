@@ -1,6 +1,7 @@
 import com.jogamp.opengl.GL2;
 
 import javax.vecmath.Vector2d;
+import java.awt.*;
 
 /**
  * Created by Aaron on 3/9/2018.
@@ -36,7 +37,12 @@ public class Circle extends Shape {
         }
         gl.glEnd();
     }
-
+    public boolean containsPoint(Point p){
+        return (p.getX() > getLeftPoint() &&
+                p.getX() < getRightPoint() &&
+                p.getY() > getTopPoint() &&
+                p.getY() < getBottomPoint());
+    }
     public float getLeftPoint() {
         return x- radius;
     }

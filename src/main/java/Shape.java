@@ -1,5 +1,6 @@
 import com.jogamp.opengl.GL2;
 import javax.vecmath.Vector2d;
+import java.awt.*;
 
 
 /**
@@ -18,6 +19,7 @@ public abstract class Shape {
         x = (float) (x + movement.getX()/60);
         y = (float) (y + movement.getY()/60);
     }
+    public abstract boolean containsPoint(Point p);
     public void setX(float x){
         this.x = x;
     }

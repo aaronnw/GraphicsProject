@@ -4,10 +4,13 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.vecmath.Vector2d;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 /**
@@ -31,7 +34,6 @@ public class Controller {
         canvas.setPreferredSize(new Dimension(width, height));
         view.setWidth(width);
         view.setHeight(height);
-
         frame.setBounds(0, 0, width, height);
         frame.setLocationRelativeTo(null);
         frame.getContentPane().add(canvas);
@@ -45,6 +47,7 @@ public class Controller {
             }
         });
         canvas.addGLEventListener(view);
+        canvas.addMouseListener(view);
 
         addShapes();
 
@@ -83,6 +86,15 @@ public class Controller {
             shape.setMovement(movement);
 
             model.addShape(shape);
+        }
+    }
+    public void processClick(Point p){
+        Iterator<Shape> iter = model.getShapes().iterator();
+
+        while (iter.hasNext()) {
+            Shape s = iter.next();
+            if (s.containsPoint(p))
+                iter.remove();
         }
     }
 }

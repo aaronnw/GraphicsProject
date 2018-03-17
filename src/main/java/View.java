@@ -1,11 +1,17 @@
 import com.jogamp.opengl.*;
+import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 
 /**
  * Created by Aaron on 3/9/2018.
  */
-public class View implements GLEventListener{
+public class View implements GLEventListener, MouseListener {
     private int	w;
     private int	h;
     private int counter = 0;
@@ -70,6 +76,7 @@ public class View implements GLEventListener{
             s.move();
         }
     }
+
     public int getWidth(){
         return w;
     }
@@ -81,5 +88,26 @@ public class View implements GLEventListener{
     }
     public void setHeight(int h){
         this.h = h;
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        controller.processClick(new Point(e.getX(), e.getY()));
+    }
+
+    public void mousePressed(MouseEvent e) {
+
+        controller.processClick(new Point(e.getX(), e.getY()));
+    }
+
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    public void mouseExited(MouseEvent e) {
+
     }
 }
