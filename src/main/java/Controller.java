@@ -19,7 +19,8 @@ import java.util.Random;
 public class Controller {
     Model model;
     View view;
-    int playAreaTop = 100;
+    int playAreaTop = 150;
+    Random rand = new Random();
 
     public Controller(Model m, View v){
         model = m;
@@ -51,15 +52,16 @@ public class Controller {
         canvas.addGLEventListener(view);
         canvas.addMouseListener(view);
 
-        addShapes();
+        addShapes(10);
+        setTarget();
 
         FPSAnimator animator = new FPSAnimator(canvas, 60);
         animator.start();
     }
 
-    public void addShapes(){
+    public void addShapes(int numShapes){
         //Can change these later for harder levels
-        int numShapes = 10;
+        //Should be moved to model
         int maxShapeSize = 100;
         int minShapeSize = 20;
         int maxVel = 300;
@@ -68,7 +70,7 @@ public class Controller {
         Random rand = new Random();
         Color[] colors = Color.values();
 
-        for (int i = 0; i < 10 ; i++) {
+        for (int i = 0; i < numShapes ; i++) {
             int size = minShapeSize + rand.nextInt(maxShapeSize-minShapeSize);
             int x = rand.nextInt(view.getWidth()-size) + size/2;
             int y = playAreaTop + rand.nextInt(view.getHeight()-size-playAreaTop) + size/2;
@@ -90,13 +92,29 @@ public class Controller {
             model.addShape(shape);
         }
     }
+    public void setTarget(){
+        ArrayList<Shape> shapeList = model.getShapes();
+        int index = rand.nextInt(shapeList.size());
+        Shape source = shapeList.get(index);
+        Shape target = source.makeCopy();
+        model.setTarget(target);
+    }
     public void processClick(Point p){
         Iterator<Shape> iter = model.getShapes().iterator();
-
+        Shape target = model.getTarget();
+        Color targetColor = target.getColor();
         while (iter.hasNext()) {
             Shape s = iter.next();
-            if (s.containsPoint(p))
-                iter.remove();
+            //If this is the shape we clicked
+            if (s.containsPoint(p)) {
+                Color clickedColor = s.getColor();
+                if(targetColor.equals(clickedColor) && target.getClass().equals(s.getClass())){
+                    iter.remove();
+                    addShapes(1);
+                    setTarget();
+                    return;
+                }
+            }
         }
     }
 }

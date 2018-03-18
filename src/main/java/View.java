@@ -6,12 +6,14 @@ import com.jogamp.opengl.glu.GLU;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
  * Created by Aaron on 3/9/2018.
  */
-public class View implements GLEventListener, MouseListener {
+public class View implements GLEventListener, MouseListener, Observer {
     private int	w;
     private int	h;
     private int counter = 0;
@@ -56,6 +58,7 @@ public class View implements GLEventListener, MouseListener {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
         setPixelProjection(gl, drawable);
         drawTargetArea(gl);
+        drawTarget(gl);
         drawShapes(gl);
     }
     private void	setPixelProjection(GL2 gl, GLAutoDrawable drawable)
@@ -72,6 +75,12 @@ public class View implements GLEventListener, MouseListener {
         gl.glVertex2i(0, playAreaTop);
         gl.glVertex2i(w, playAreaTop);
         gl.glEnd();
+    }
+    private void drawTarget(GL2 gl){
+        Shape target = model.getTarget();
+        target.setX(w - 200);
+        target.setY(target.getSize()/2 + 10);
+        target.draw(gl);
     }
     private void drawShapes(GL2 gl){
         for (Shape s: model.getShapes()) {
@@ -108,7 +117,6 @@ public class View implements GLEventListener, MouseListener {
     }
 
     public void mousePressed(MouseEvent e) {
-
         controller.processClick(new Point(e.getX(), e.getY()));
     }
 
@@ -122,5 +130,8 @@ public class View implements GLEventListener, MouseListener {
 
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    public void update(Observable o, Object arg) {
     }
 }

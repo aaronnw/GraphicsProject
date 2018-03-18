@@ -8,20 +8,22 @@ import java.awt.*;
  */
 public class Circle extends Shape {
     private int radius;
-    private Color color = Color.WHITE;
 
-    public Circle(int x, int y, int size){
+    public Circle(float x, float y, int size){
         this.x = x;
         this.y = y;
         radius = size/2;
+        this.size = size;
         this.movement = new Vector2d(0,0);
     }
 
-    public Circle(int x, int y, int size, Vector2d movement){
+    public Circle(float x, float y, int size, Vector2d movement, Color color){
         this.x = x;
         this.y = y;
         this.movement = movement;
+        this.size = size;
         radius = size/2;
+        this.color = color;
     }
 
     public void draw(GL2 gl){
@@ -61,6 +63,10 @@ public class Circle extends Shape {
 
     public void setColor(Color color){
         this.color = color;
+    }
+
+    public Circle makeCopy(){
+        return new Circle(x, y, size, movement, color);
     }
 
 }

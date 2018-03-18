@@ -8,20 +8,22 @@ import java.awt.*;
  */
 public class Square extends Shape {
     private int sideLength;
-    private Color color = Color.WHITE;
 
-    public Square(int x, int y, int size){
+    public Square(float x, float y, int size){
         this.x = x;
         this.y = y;
         sideLength = size;
+        this.size = size;
         this.movement = new Vector2d(0,0);
     }
 
-    public Square(int x, int y, int size, Vector2d movement){
+    public Square(float x, float y, int size, Vector2d movement, Color color){
         this.x = x;
         this.y = y;
         this.movement = movement;
+        this.size = size;
         sideLength = size;
+        this.color = color;
     }
 
     public void draw(GL2 gl){
@@ -59,6 +61,10 @@ public class Square extends Shape {
 
     public void setColor(Color color){
         this.color = color;
+    }
+
+    public Square makeCopy(){
+        return new Square(x,y,size, movement, color);
     }
 
 }

@@ -1,10 +1,12 @@
 import java.util.ArrayList;
+import java.util.Observable;
 
 /**
  * Created by Aaron on 3/9/2018.
  */
-public class Model {
+public class Model extends Observable{
     ArrayList<Shape> shapes;
+    Shape target;
 
     public Model(){
         shapes = new ArrayList();
@@ -15,4 +17,14 @@ public class Model {
     public ArrayList<Shape> getShapes(){
         return shapes;
     }
+    public void setTarget(Shape s){
+        target = s;
+        setChanged();
+        notifyObservers("TARGET_CHANGED");
+    }
+    public Shape getTarget(){
+        return target;
+    }
+
+
 }

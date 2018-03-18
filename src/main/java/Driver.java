@@ -9,6 +9,7 @@ public class Driver {
         int height = 1100;
         Model m = new Model();
         View v = new View();
+        m.addObserver(v);
         Controller c = new Controller(m, v);
         v.setController(c);
         v.setModel(m);

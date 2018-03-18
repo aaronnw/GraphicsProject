@@ -6,9 +6,10 @@ import java.awt.*;
 /**
  * Created by Aaron on 3/9/2018.
  */
-public abstract class Shape {
+public abstract class Shape{
     float x;
     float y;
+    int size;
     Color color;
     Vector2d movement;
 
@@ -47,4 +48,11 @@ public abstract class Shape {
     public void setColor(Color color) {
         this.color = color;
     }
+    public Color getColor(){
+        return color;
+    }
+    public int getSize(){
+        return size;
+    }
+    public abstract Shape makeCopy();
 }
