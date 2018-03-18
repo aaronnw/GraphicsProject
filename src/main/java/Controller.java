@@ -95,8 +95,7 @@ public class Controller {
     public void setTarget(){
         ArrayList<Shape> shapeList = model.getShapes();
         int index = rand.nextInt(shapeList.size());
-        Shape source = shapeList.get(index);
-        Shape target = source.makeCopy();
+        Shape target = shapeList.get(index).makeCopy();
         model.setTarget(target);
     }
     public void processClick(Point p){

@@ -113,7 +113,6 @@ public class View implements GLEventListener, MouseListener, Observer {
     }
 
     public void mouseClicked(MouseEvent e) {
-        controller.processClick(new Point(e.getX(), e.getY()));
     }
 
     public void mousePressed(MouseEvent e) {
