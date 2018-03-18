@@ -63,7 +63,7 @@ public class Controller {
         //Can change these later for harder levels
         //Should be moved to model
         int maxShapeSize = 100;
-        int minShapeSize = 20;
+        int minShapeSize = 30;
         int maxVel = 300;
         int minVel = 50;
 
@@ -96,6 +96,7 @@ public class Controller {
         ArrayList<Shape> shapeList = model.getShapes();
         int index = rand.nextInt(shapeList.size());
         Shape target = shapeList.get(index).makeCopy();
+        target.setMovement(new Vector2d(0,0));
         model.setTarget(target);
     }
     public void processClick(Point p){
