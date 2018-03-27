@@ -61,10 +61,6 @@ public class Circle extends Shape {
         return y+ radius;
     }
 
-    public void setColor(Color color){
-        this.color = color;
-    }
-
     public Circle makeCopy(){
         return new Circle(x, y, size, movement, color);
     }

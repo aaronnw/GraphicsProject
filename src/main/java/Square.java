@@ -59,10 +59,6 @@ public class Square extends Shape {
         return y+sideLength/2;
     }
 
-    public void setColor(Color color){
-        this.color = color;
-    }
-
     public Square makeCopy(){
         return new Square(x,y,size, movement, color);
     }
