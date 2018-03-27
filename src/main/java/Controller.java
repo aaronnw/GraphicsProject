@@ -20,6 +20,7 @@ public class Controller {
     Model model;
     View view;
     int playAreaTop = 150;
+    int defaultSize = 100;
     Random rand = new Random();
 
     public Controller(Model m, View v){
@@ -96,6 +97,8 @@ public class Controller {
         ArrayList<Shape> shapeList = model.getShapes();
         int index = rand.nextInt(shapeList.size());
         Shape target = shapeList.get(index).makeCopy();
+        target.setMovement(new Vector2d(0,0));
+        target.size = defaultSize;
         model.setTarget(target);
     }
     public void processClick(Point p){

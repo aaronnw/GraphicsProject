@@ -13,9 +13,6 @@ public abstract class Shape{
     Color color;
     Vector2d movement;
 
-    public void draw(GL2 gl){
-
-    }
     public void move(){
         x = (float) (x + movement.getX()/60);
         y = (float) (y + movement.getY()/60);
@@ -41,6 +38,7 @@ public abstract class Shape{
     public Vector2d getMovement() {
         return movement;
     }
+    public abstract void draw(GL2 gl);
     public abstract float getLeftPoint();
     public abstract float getTopPoint();
     public abstract float getRightPoint();
