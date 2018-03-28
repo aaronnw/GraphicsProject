@@ -45,13 +45,8 @@ public abstract class Shape{
     public abstract float getBottomPoint();
     public void setColor(Color color) {
         this.color = color;
-        //System.out.println(color);
-    //    System.out.println("Red: " + color.getR() + " Green: " + color.getG() + " Blue: " + color.getB());
     }
     public Color getColor(){
-
-        System.out.println(color);
-        System.out.println("Red: " + color.getR() + " Green: " + color.getG() + " Blue: " + color.getB());
         return color;
     }
     public int getSize(){

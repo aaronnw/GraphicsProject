@@ -4,13 +4,16 @@
 public enum Color {
     RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET, WHITE;
 
-    public int getR(){
+    public float getR(){
         switch (this){
             case RED:
+                return 255;
             case ORANGE:
+                return 255;
             case YELLOW:
                 return 255;
             case GREEN:
+                return 0;
             case BLUE:
                 return 0;
             case INDIGO:
@@ -21,27 +24,34 @@ public enum Color {
                 return 255;
         }
     }
-    public int getG(){
+    public float getG(){
         switch (this){
             case RED:
+                return 0;
             case BLUE:
+                return 0;
             case INDIGO:
+                return 0;
             case VIOLET:
                 return 0;
             case ORANGE:
                 return 127;
             case YELLOW:
+                return 255;
             case GREEN:
                 return 255;
             default:
                 return 255;
         }
     }
-    public int getB(){
+    public float getB(){
         switch (this){
             case RED:
+                return 0;
             case ORANGE:
+                return 0;
             case YELLOW:
+                return 0;
             case GREEN:
                 return 0;
             case BLUE:

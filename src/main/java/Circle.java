@@ -28,7 +28,7 @@ public class Circle extends Shape {
 
     public void draw(GL2 gl){
         int circleSides = 32;
-        gl.glColor4f(color.getR(), color.getG(), color.getB(), color.getA());
+        gl.glColor4f(color.getR()/255, color.getG()/255, color.getB()/255, color.getA());
         gl.glBegin(GL2.GL_TRIANGLE_FAN);
         for(int i = 0; i <= circleSides; i++){
             gl.glVertex2f(

@@ -28,7 +28,7 @@ public class Square extends Shape {
 
     public void draw(GL2 gl){
         int halfSide = sideLength/2;
-        gl.glColor4f(color.getR(), color.getG(), color.getB(), color.getA());
+        gl.glColor4f(color.getR()/255, color.getG()/255, color.getB()/255, color.getA());
         gl.glBegin(GL2.GL_POLYGON);
         gl.glVertex2f(x +halfSide, y+halfSide);
         gl.glVertex2f(x + halfSide, y-halfSide);

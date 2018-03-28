@@ -55,7 +55,7 @@ public class View implements GLEventListener, MouseListener, Observer {
     }
     private  void render(GLAutoDrawable drawable){
         GL2 gl = drawable.getGL().getGL2();
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
+       gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
         setPixelProjection(gl, drawable);
         drawTargetArea(gl);
         drawTarget(gl);
