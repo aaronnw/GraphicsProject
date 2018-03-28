@@ -70,7 +70,6 @@ public class Controller {
 
         Random rand = new Random();
         Color[] colors = Color.values();
-
         for (int i = 0; i < numShapes ; i++) {
             int size = minShapeSize + rand.nextInt(maxShapeSize-minShapeSize);
             int x = rand.nextInt(view.getWidth()-size) + size/2;
@@ -80,9 +79,10 @@ public class Controller {
             int shapeType = rand.nextInt(2);
             if(shapeType == 1) {
                 shape = new Square(x, y, size);
-            }else{
+            }else {
                 shape = new Circle(x, y, size);
             }
+
             shape.setColor(colors[colorVal]);
 
             int movementX = minVel + rand.nextInt(maxVel-minVel);
@@ -110,7 +110,9 @@ public class Controller {
             //If this is the shape we clicked
             if (s.containsPoint(p)) {
                 Color clickedColor = s.getColor();
-                if(targetColor.equals(clickedColor) && target.getClass().equals(s.getClass())){
+                System.out.println("Target color:" + targetColor);
+                System.out.println("color clicked: " + clickedColor);
+                if(targetColor == clickedColor && target.getClass().equals(s.getClass())){
                     iter.remove();
                     addShapes(1);
                     setTarget();

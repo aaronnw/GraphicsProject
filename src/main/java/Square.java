@@ -1,7 +1,7 @@
 import com.jogamp.opengl.GL2;
 
 import javax.vecmath.Vector2d;
-import java.awt.*;
+import java.awt.Point;
 
 /**
  * Created by Aaron on 3/9/2018.
