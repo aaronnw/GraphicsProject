@@ -5,6 +5,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -101,7 +102,7 @@ public class Controller {
         target.size = defaultSize;
         model.setTarget(target);
     }
-    public void processClick(Point p){
+    public void processClick(Point2f p){
         Iterator<Shape> iter = model.getShapes().iterator();
         Shape target = model.getTarget();
         Color targetColor = target.getColor();

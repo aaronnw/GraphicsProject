@@ -1,8 +1,7 @@
 import com.jogamp.opengl.*;
-import com.jogamp.opengl.awt.GLCanvas;
-import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 
+import javax.vecmath.Point2f;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -116,7 +115,7 @@ public class View implements GLEventListener, MouseListener, Observer {
     }
 
     public void mousePressed(MouseEvent e) {
-        controller.processClick(new Point(e.getX(), e.getY()));
+        controller.processClick(new Point2f(e.getX(), e.getY()));
     }
 
     public void mouseReleased(MouseEvent e) {

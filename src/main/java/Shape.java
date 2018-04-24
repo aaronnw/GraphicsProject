@@ -1,6 +1,9 @@
 import com.jogamp.opengl.GL2;
+
+import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
 import java.awt.*;
+import java.util.ArrayList;
 
 
 /**
@@ -12,12 +15,16 @@ public abstract class Shape{
     int size;
     Color color;
     Vector2d movement;
+    ArrayList<Vector2d> vectors;
+    ArrayList<Point2f> points;
 
     public void move(){
         x = (float) (x + movement.getX()/60);
         y = (float) (y + movement.getY()/60);
     }
-    public abstract boolean containsPoint(Point p);
+    public abstract boolean containsPoint(Point2f p);
+    //Like contains point, but returns the edge that a point violates
+    public abstract Vector2d violatingEdge(Point2f p);
     public void setX(float x){
         this.x = x;
     }
