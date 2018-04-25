@@ -78,7 +78,7 @@ public class Controller {
             int y = playAreaTop + rand.nextInt(view.getHeight()-size-playAreaTop) + size/2;
             int colorVal = rand.nextInt(colors.length);
             Shape shape;
-            int shapeType = rand.nextInt(2);
+            int shapeType = rand.nextInt(1)+1;
             if(shapeType == 1) {
                 shape = new Square(x, y, size);
             }else {
@@ -132,5 +132,8 @@ public class Controller {
                 }
             }
         }
+    }
+    public double distanceBetween(Shape s1, Shape s2){
+        return Math.sqrt(Math.pow(s1.getX()-s2.getX(), 2) + Math.pow(s1.getY() - s2.getY(), 2));
     }
 }

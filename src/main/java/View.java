@@ -106,7 +106,7 @@ public class View implements GLEventListener, MouseListener, Observer {
             }
         }
         for(Shape each:model.getShapes()){
-            if(!s.equals(each)){
+            if(!s.equals(each) && controller.distanceBetween(s, each) < s.getSize() + each.getSize()){
                 for(Point2f p:s.getPoints()) {
                     if (each.containsPoint(p)) {
                         //Find the edge the shape hit
