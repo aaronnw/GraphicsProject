@@ -2,7 +2,6 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.glu.GLU;
 
 import javax.vecmath.Point2f;
-import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Observable;
@@ -79,11 +78,11 @@ public class View implements GLEventListener, MouseListener, Observer {
         Shape target = model.getTarget();
         target.setX(w - 200);
         target.setY(target.getSize()/2 + 10);
-        target.draw(gl);
+        target.update(gl);
     }
     private void drawShapes(GL2 gl){
         for (Shape s: model.getShapes()) {
-            s.draw(gl);
+            s.update(gl);
             //Added some basic movement
             if(s.getTopPoint() < playAreaTop || s.getBottomPoint() > h){
                 s.getMovement().setY(-s.getMovement().getY());

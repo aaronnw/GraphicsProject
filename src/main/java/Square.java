@@ -1,10 +1,4 @@
-import com.jogamp.opengl.GL2;
-
-import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Aaron on 3/9/2018.
@@ -17,11 +11,10 @@ public class Square extends Shape {
         this.y = y;
         this.size = size;
         this.movement = new Vector2d(0,0);
-        startX = x+size/2;
-        startY = y+size/2;
+        rotationAmount = .25*Math.PI;
         sideNum = 4;
-        populateVectors();
         populatePoints();
+        populateVectors();
     }
 
     public Square(float x, float y, int size, Vector2d movement, Color color){
@@ -30,11 +23,10 @@ public class Square extends Shape {
         this.movement = movement;
         this.size = size;
         this.color = color;
-        startX = x+size/2;
-        startY = y+size/2;
+        rotationAmount = .25*Math.PI;
         sideNum = 4;
-        populateVectors();
         populatePoints();
+        populateVectors();
     }
 
     public float getLeftPoint() {
