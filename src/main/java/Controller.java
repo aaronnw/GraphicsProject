@@ -136,4 +136,7 @@ public class Controller {
     public double distanceBetween(Shape s1, Shape s2){
         return Math.sqrt(Math.pow(s1.getX()-s2.getX(), 2) + Math.pow(s1.getY() - s2.getY(), 2));
     }
+    public double distanceBetween(Point2f p1, Point2f p2){
+        return Math.sqrt(Math.pow(p1.getX()-p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
+    }
 }

@@ -19,7 +19,6 @@ public class View implements GLEventListener, MouseListener, Observer {
     private Controller controller;
     private Model model;
     private int playAreaTop;
-
     public View(){
 
     }
@@ -111,20 +110,42 @@ public class View implements GLEventListener, MouseListener, Observer {
                     if (each.containsPoint(p)) {
                         //Find the edge the shape hit
                         Vector2d edge = each.violatingInsideEdge(p);
-                        //Get the normal vector to the edge
-                        Vector2d normal = new Vector2d(edge.getY(), -edge.getX());
-                        normal.normalize();
-                        Vector2d v = new Vector2d(s.getMovement().getX(), s.getMovement().getY());
-                        normal.scale(v.dot(normal) * 2);
-                        //The actual reflection vector
-                        Vector2d newMovement = new Vector2d(v.getX() - normal.getX(), v.getY() - normal.getY());
-                        s.setMovement(newMovement);
+                        handleCollision(s, each, edge);
                         return;
                     }
                 }
             }
         }
 
+    }
+    private void handleCollision(Shape encroachingShape, Shape edgeShape, Vector2d edge){
+        //If the shapes are heading away from each other let them so we don't get them stuck
+        Vector2d encroachingShapeMovement = encroachingShape.getMovement();
+        Vector2d edgeShapeMovement = edgeShape.getMovement();
+        Vector2d betweenShapes = new Vector2d(edgeShape.getX() - encroachingShape.getX(), edgeShape.getY()- encroachingShape.getY());
+        double encroachingShapeAngle = encroachingShapeMovement.angle(betweenShapes);
+        double edgeShapeAngle = edgeShapeMovement.angle(betweenShapes);
+        if(encroachingShapeAngle > Math.PI/2 && edgeShapeAngle > Math.PI/2){
+            return;
+       }
+
+
+        //Get the normal vector to the edge
+        Vector2d normal = new Vector2d(edge.getY(), -edge.getX());
+        normal.normalize();
+        normal.scale(encroachingShapeMovement.dot(normal) * 2);
+        //The actual reflection vector
+        Vector2d newEncroachingShapeMovement = new Vector2d(encroachingShapeMovement.getX() - normal.getX(), encroachingShapeMovement.getY() - normal.getY());
+
+        //Get the normal vector to the direction of the encroaching shape
+        Vector2d encroachingNormal = encroachingShape.getMovement();
+        encroachingNormal.normalize();
+        encroachingNormal.scale(edgeShapeMovement.dot(encroachingNormal) * 2);
+        //The actual reflection vector
+        Vector2d newEdgeShapeMovement = new Vector2d(edgeShapeMovement.getX() - encroachingNormal.getX(), edgeShapeMovement.getY() - encroachingNormal.getY());
+
+        encroachingShape.setMovement(newEncroachingShapeMovement);
+        edgeShape.setMovement(newEdgeShapeMovement);
     }
 
     public int getWidth(){
