@@ -68,7 +68,7 @@ public class Controller {
         int maxShapeSize = 100;
         int minShapeSize = 20;
         int maxVel = 300;
-        int minVel = 50;
+        int minVel = 100;
 
         Random rand = new Random();
         Color[] colors = Color.values();
