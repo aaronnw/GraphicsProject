@@ -48,7 +48,7 @@ public class Container {
             Vector2d v = new Vector2d(points.get(i+1).getX() - points.get(i).getX(),points.get(i+1).getY() - points.get(i).getY());
             vectors.add(v);
         }
-        vectors.add(new Vector2d(points.get(points.size()-1).getX() - points.get(0).getX(),points.get(points.size()-1).getY() - points.get(0).getY()));
+        vectors.add(new Vector2d(points.get(0).getX() - points.get(points.size()-1).getX(),points.get(0).getY() - points.get(points.size()-1).getY()));
     }
 
     public void draw(GL2 gl){
