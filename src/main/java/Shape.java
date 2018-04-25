@@ -110,10 +110,9 @@ public abstract class Shape{
         }
         return null;
     }
-    public abstract float getLeftPoint();
-    public abstract float getTopPoint();
-    public abstract float getRightPoint();
-    public abstract float getBottomPoint();
+    public ArrayList<Point2f> getPoints(){
+        return  points;
+    }
     public void setColor(Color color) {
         this.color = color;
     }
