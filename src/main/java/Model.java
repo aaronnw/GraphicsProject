@@ -7,6 +7,7 @@ import java.util.Observable;
 public class Model extends Observable{
     ArrayList<Shape> shapes;
     Shape target;
+    Container container;
 
     public Model(){
         shapes = new ArrayList();
@@ -24,6 +25,12 @@ public class Model extends Observable{
     }
     public Shape getTarget(){
         return target;
+    }
+    public void setContainer(Container s){
+        container = s;
+    }
+    public Container getContainer(){
+        return container;
     }
 
 

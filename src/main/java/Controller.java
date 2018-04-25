@@ -56,6 +56,7 @@ public class Controller {
 
         addShapes(10);
         setTarget();
+        setContainer();
 
         FPSAnimator animator = new FPSAnimator(canvas, 60);
         animator.start();
@@ -101,6 +102,16 @@ public class Controller {
         target.setMovement(new Vector2d(0,0));
         target.size = defaultSize;
         model.setTarget(target);
+    }
+    public void setContainer(){
+        ArrayList<Point2f> containerPoints = new ArrayList<Point2f>();
+        containerPoints.add(new Point2f(0,playAreaTop));
+        containerPoints.add(new Point2f(view.getWidth(),playAreaTop));
+        containerPoints.add(new Point2f(view.getWidth(),view.getHeight()));
+        containerPoints.add(new Point2f(0,view.getHeight()
+        ));
+        Container container = new Container(containerPoints);
+        model.setContainer(container);
     }
     public void processClick(Point2f p){
         Iterator<Shape> iter = model.getShapes().iterator();
