@@ -19,6 +19,7 @@ public class Circle extends Shape {
         this.movement = new Vector2d(0,0);
         startX = x+size/2;
         startY = y;
+        sideNum = 32;
         populateVectors();
         populatePoints();
     }
@@ -31,6 +32,7 @@ public class Circle extends Shape {
         this.color = color;
         startX = x+size/2;
         startY = y;
+        sideNum = 32;
         populateVectors();
         populatePoints();
     }

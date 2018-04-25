@@ -49,10 +49,12 @@ public abstract class Shape{
         vectors = new ArrayList<Vector2d>();
         float lastX = startX;
         float lastY = startY;
+        Vector2d rotationVector = new Vector2d(startY - y, startX - x);
+        double rotationAngle = rotationVector.angle(new Vector2d(1,0));
         for(int i = 1; i <= sideNum; i++){
-            Point nextPoint = new Point(
-                    (int)(x + (size*Math.cos(i*2*Math.PI/sideNum))),
-                    (int)(y - (size*Math.sin(i*2*Math.PI/sideNum))));
+            Point2f nextPoint = new Point2f(
+                    (float)(x + ((size/2)*Math.cos(i*2*Math.PI/sideNum))),
+                    (float)(y - ((size/2)*Math.sin(i*2*Math.PI/sideNum))));
             Vector2d temp = new Vector2d(nextPoint.x - lastX, nextPoint.y - lastY);
             vectors.add(temp);
             lastX = nextPoint.x;
@@ -71,7 +73,7 @@ public abstract class Shape{
     }
     public void draw(GL2 gl){
         gl.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, color.getA());
-        gl.glBegin(GL2.GL_POLYGON);
+        gl.glBegin(GL2.GL_LINE_STRIP);
         gl.glVertex2f(startX, startY);
         for(Point2f p:points){
             gl.glVertex2f(p.x, p.y);

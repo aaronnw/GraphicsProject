@@ -15,11 +15,11 @@ public class Square extends Shape {
     public Square(float x, float y, int size){
         this.x = x;
         this.y = y;
-        sideLength = size;
         this.size = size;
         this.movement = new Vector2d(0,0);
         startX = x+size/2;
         startY = y+size/2;
+        sideNum = 4;
         populateVectors();
         populatePoints();
     }
@@ -29,10 +29,10 @@ public class Square extends Shape {
         this.y = y;
         this.movement = movement;
         this.size = size;
-        sideLength = size;
         this.color = color;
         startX = x+size/2;
         startY = y+size/2;
+        sideNum = 4;
         populateVectors();
         populatePoints();
     }
