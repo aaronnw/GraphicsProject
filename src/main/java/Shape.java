@@ -95,7 +95,7 @@ public abstract class Shape{
         }
         return true;
     }
-    public Vector2d violatingEdge(Point2f p){
+    public Vector2d violatingOutsideEdge(Point2f p){
         float beginX = points.get(0).getX();
         float beginY = points.get(0).getY();
         float endX;
@@ -104,6 +104,22 @@ public abstract class Shape{
             endX = beginX + (float) v.x;
             endY = beginY + (float) v.y;
             if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) > 0){
+                return v;
+            }
+            beginX = endX;
+            beginY = endY;
+        }
+        return null;
+    }
+    public Vector2d violatingInsideEdge(Point2f p){
+        float beginX = points.get(0).getX();
+        float beginY = points.get(0).getY();
+        float endX;
+        float endY;
+        for(Vector2d v: vectors){
+            endX = beginX + (float) v.x;
+            endY = beginY + (float) v.y;
+            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) < 0){
                 return v;
             }
             beginX = endX;

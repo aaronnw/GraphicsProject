@@ -105,6 +105,25 @@ public class View implements GLEventListener, MouseListener, Observer {
                 return;
             }
         }
+        for(Shape each:model.getShapes()){
+            if(!s.equals(each)){
+                for(Point2f p:s.getPoints()) {
+                    if (each.containsPoint(p)) {
+                        //Find the edge the shape hit
+                        Vector2d edge = each.violatingInsideEdge(p);
+                        //Get the normal vector to the edge
+                        Vector2d normal = new Vector2d(edge.getY(), -edge.getX());
+                        normal.normalize();
+                        Vector2d v = new Vector2d(s.getMovement().getX(), s.getMovement().getY());
+                        normal.scale(v.dot(normal) * 2);
+                        //The actual reflection vector
+                        Vector2d newMovement = new Vector2d(v.getX() - normal.getX(), v.getY() - normal.getY());
+                        s.setMovement(newMovement);
+                        return;
+                    }
+                }
+            }
+        }
 
     }
 
