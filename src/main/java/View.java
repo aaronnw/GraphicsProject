@@ -84,10 +84,10 @@ public class View implements GLEventListener, MouseListener, Observer {
         for (Shape s: model.getShapes()) {
             s.update(gl);
             //Added some basic movement
-            if(s.getTopPoint() < playAreaTop || s.getBottomPoint() > h){
+            if(s.getY() < playAreaTop || s.getY() > h){
                 s.getMovement().setY(-s.getMovement().getY());
             }
-            if(s.getLeftPoint() < 0 || s.getRightPoint() > w){
+            if(s.getX() < 0 || s.getX() > w){
                 s.getMovement().setX(-s.getMovement().getX());
             }
             s.move();
