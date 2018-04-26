@@ -170,7 +170,7 @@ public class View implements GLEventListener, MouseListener, Observer {
 //        }
 
         //Get the normal vector to the edge
-        Vector2d rightNormal = new Vector2d(edge.getY(), -edge.getX());
+        Vector2d rightNormal = new Vector2d(-edge.getY(), -edge.getX());
         rightNormal.normalize();
         rightNormal.scale(encroachingShapeMovement.dot(rightNormal) * 2);
         //The actual reflection vector
