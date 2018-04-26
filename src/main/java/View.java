@@ -118,6 +118,8 @@ public class View implements GLEventListener, MouseListener, Observer {
             if(!s.equals(each) && controller.distanceBetween(s, each) < s.getSize() + each.getSize()){
                 for(Point2f p:s.getPoints()) {
                     if (each.containsPoint(p)) {
+                        //One of the points of shape s has crossed an edge of shape each
+                        Collision = new Collision(s, each, p);
                         //Find the edge the shape hit
                         Vector2d edge = each.violatingInsideEdge(p);
                         handleCollision(s, each, edge, p);
