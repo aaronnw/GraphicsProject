@@ -4,6 +4,7 @@ import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.TreeMap;
 
 
@@ -17,11 +18,11 @@ public abstract class Shape{
     int sideNum;
     int speed;
     double rotationAmount;
-    boolean ignored = false;
     Color color;
     Vector2d movement;
     ArrayList<Vector2d> vectors;
     ArrayList<Point2f> points;
+    double offsetVal = 0;
 
     public void move(){
         x = (float) (x + speed*movement.getX()/10);
@@ -73,7 +74,7 @@ public abstract class Shape{
     }
     public void draw(GL2 gl){
         gl.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, color.getA());
-        gl.glBegin(GL2.GL_POLYGON);
+        gl.glBegin(GL2.GL_LINE_STRIP);
         for(Point2f p:points){
             gl.glVertex2f(p.x, p.y);
         }
@@ -89,7 +90,7 @@ public abstract class Shape{
         for(Vector2d v: vectors){
             endX = beginX + (float) v.x;
             endY = beginY + (float) v.y;
-            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) > 0){
+            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) > offsetVal){
                 return false;
             }
             beginX = endX;
@@ -105,7 +106,7 @@ public abstract class Shape{
         for(Vector2d v: vectors){
             endX = beginX + (float) v.x;
             endY = beginY + (float) v.y;
-            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) > 0){
+            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) > offsetVal){
                 return v;
             }
             beginX = endX;
@@ -121,7 +122,7 @@ public abstract class Shape{
         for(Vector2d v: vectors){
             endX = beginX + (float) v.x;
             endY = beginY + (float) v.y;
-            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) < 0){
+            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) < -offsetVal){
                 return v;
             }
             beginX = endX;
@@ -148,13 +149,5 @@ public abstract class Shape{
     }
     public double getRotationAmount() {
         return rotationAmount;
-    }
-
-    public boolean isIgnored() {
-        return ignored;
-    }
-
-    public void setIgnored(boolean ignored) {
-        this.ignored = ignored;
     }
 }
