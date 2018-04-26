@@ -54,7 +54,7 @@ public class Controller {
         canvas.addGLEventListener(view);
         canvas.addMouseListener(view);
 
-        addShapes(10);
+        addShapes(3);
         setTarget();
         setContainer();
 
@@ -65,8 +65,8 @@ public class Controller {
     public void addShapes(int numShapes){
         //Can change these later for harder levels
         //Should be moved to model
-        int maxShapeSize = 100;
-        int minShapeSize = 40;
+        int maxShapeSize = 300;
+        int minShapeSize = 250;
         int maxVel = 100;
         int minVel = 50;
 
@@ -78,7 +78,8 @@ public class Controller {
             int y = playAreaTop + rand.nextInt(view.getHeight()-size-playAreaTop) + size/2;
             int colorVal = rand.nextInt(colors.length);
             Shape shape;
-            int shapeType = rand.nextInt(4);
+            int shapeType = 1;
+            //int shapeType = rand.nextInt(4);
             switch (shapeType){
                 case 0:
                     shape = new Triangle(x, y, size);

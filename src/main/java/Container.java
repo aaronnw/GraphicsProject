@@ -13,11 +13,14 @@ public class Container {
     Color color;
     ArrayList<Vector2d> vectors;
     ArrayList<Point2f> points;
+    Point2f center;
+    double offsetVal = .05;
 
     public Container(ArrayList<Point2f> points){
         this.color = Color.WHITE;
         this.points = sortPoints(points);
         populateVectors();
+        calculateCenter();
     }
     public ArrayList<Point2f> sortPoints(ArrayList<Point2f> pointList){
         if(pointList.size() < 2){
@@ -69,7 +72,7 @@ public class Container {
         for(Vector2d v: vectors){
             endX = beginX + (float) v.x;
             endY = beginY + (float) v.y;
-            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) > 0){
+            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) > offsetVal){
                 return false;
             }
             beginX = endX;
@@ -85,7 +88,7 @@ public class Container {
         for(Vector2d v: vectors){
             endX = beginX + (float) v.x;
             endY = beginY + (float) v.y;
-            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) > 0){
+            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) > offsetVal){
                 return v;
             }
             beginX = endX;
@@ -98,6 +101,18 @@ public class Container {
     }
     public void setColor(Color color) {
         this.color = color;
+    }
+    public void calculateCenter(){
+        float sumX = 0;
+        float sumY = 0;
+        for(Point2f p:points){
+            sumX += p.getX();
+            sumY += p.getY();
+        }
+       center = new Point2f(sumX/points.size(), sumY/points.size());
+    }
+    public Point2f getCenter(){
+        return center;
     }
     public Color getColor(){
         return color;
