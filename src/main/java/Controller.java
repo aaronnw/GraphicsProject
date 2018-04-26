@@ -67,8 +67,8 @@ public class Controller {
         //Should be moved to model
         int maxShapeSize = 100;
         int minShapeSize = 20;
-        int maxVel = 300;
-        int minVel = 100;
+        int maxVel = 100;
+        int minVel = 50;
 
         Random rand = new Random();
         Color[] colors = Color.values();
@@ -80,15 +80,16 @@ public class Controller {
             Shape shape;
             int shapeType = rand.nextInt(1)+1;
             if(shapeType == 1) {
-                shape = new Square(x, y, size);
+                shape = new Triangle(x, y, size);
             }else {
                 shape = new Circle(x, y, size);
             }
 
             shape.setColor(colors[colorVal]);
+            shape.setSpeed(rand.nextInt(maxVel-minVel)+minVel);
 
-            int movementX = minVel + rand.nextInt(maxVel-minVel);
-            int movementY = minVel + rand.nextInt(maxVel-minVel);
+            double movementX = rand.nextDouble();
+            double movementY = 1-movementX;
             Vector2d movement = new Vector2d(movementX, movementY);
             shape.setMovement(movement);
 

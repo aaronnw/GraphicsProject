@@ -15,6 +15,7 @@ public abstract class Shape{
     float y;
     int size;
     int sideNum;
+    int speed;
     double rotationAmount;
     boolean ignored = false;
     Color color;
@@ -23,8 +24,8 @@ public abstract class Shape{
     ArrayList<Point2f> points;
 
     public void move(){
-        x = (float) (x + movement.getX()/60);
-        y = (float) (y + movement.getY()/60);
+        x = (float) (x + speed*movement.getX()/10);
+        y = (float) (y + speed*movement.getY()/10);
     }
     public void setX(float x){
         this.x = x;
@@ -141,6 +142,13 @@ public abstract class Shape{
         return size;
     }
     public abstract Shape makeCopy();
+
+    public void setSpeed(int speed){
+        this.speed = speed;
+    }
+    public double getRotationAmount() {
+        return rotationAmount;
+    }
 
     public boolean isIgnored() {
         return ignored;
