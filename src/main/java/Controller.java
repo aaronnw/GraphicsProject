@@ -66,9 +66,9 @@ public class Controller {
         //Can change these later for harder levels
         //Should be moved to model
         int maxShapeSize = 100;
-        int minShapeSize = 20;
-        int maxVel = 300;
-        int minVel = 100;
+        int minShapeSize = 40;
+        int maxVel = 100;
+        int minVel = 50;
 
         Random rand = new Random();
         Color[] colors = Color.values();
@@ -78,17 +78,34 @@ public class Controller {
             int y = playAreaTop + rand.nextInt(view.getHeight()-size-playAreaTop) + size/2;
             int colorVal = rand.nextInt(colors.length);
             Shape shape;
-            int shapeType = rand.nextInt(1)+1;
-            if(shapeType == 1) {
-                shape = new Square(x, y, size);
-            }else {
-                shape = new Circle(x, y, size);
+            int shapeType = rand.nextInt(4);
+            switch (shapeType){
+                case 0:
+                    shape = new Triangle(x, y, size);
+                    break;
+                case 1:
+
+                    shape = new Square(x, y, size);
+                    break;
+                case 2:
+                    shape = new Hexagon(x, y, size);
+                    break;
+                case 3:
+                    shape = new Octagon(x, y, size);
+                    break;
+                case 4:
+                    shape = new Circle(x, y, size);
+                    break;
+                default:
+                    shape = new Circle(x, y, size);
+                    break;
             }
 
             shape.setColor(colors[colorVal]);
+            shape.setSpeed(rand.nextInt(maxVel-minVel)+minVel);
 
-            int movementX = minVel + rand.nextInt(maxVel-minVel);
-            int movementY = minVel + rand.nextInt(maxVel-minVel);
+            double movementX = rand.nextDouble();
+            double movementY = 1-movementX;
             Vector2d movement = new Vector2d(movementX, movementY);
             shape.setMovement(movement);
 
@@ -135,5 +152,8 @@ public class Controller {
     }
     public double distanceBetween(Shape s1, Shape s2){
         return Math.sqrt(Math.pow(s1.getX()-s2.getX(), 2) + Math.pow(s1.getY() - s2.getY(), 2));
+    }
+    public double distanceBetween(Point2f p1, Point2f p2){
+        return Math.sqrt(Math.pow(p1.getX()-p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
     }
 }
