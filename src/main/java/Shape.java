@@ -16,6 +16,7 @@ public abstract class Shape{
     int size;
     int sideNum;
     double rotationAmount;
+    boolean ignored = false;
     Color color;
     Vector2d movement;
     ArrayList<Vector2d> vectors;
@@ -140,4 +141,12 @@ public abstract class Shape{
         return size;
     }
     public abstract Shape makeCopy();
+
+    public boolean isIgnored() {
+        return ignored;
+    }
+
+    public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
 }
