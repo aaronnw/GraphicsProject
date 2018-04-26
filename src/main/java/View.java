@@ -5,6 +5,7 @@ import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,6 +20,8 @@ public class View implements GLEventListener, MouseListener, Observer {
     private Controller controller;
     private Model model;
     private int playAreaTop;
+    private ArrayList<Collision> collisionList;
+    private ArrayList<Collision> trimmedCollisions;
     public View(){
 
     }
@@ -81,11 +84,29 @@ public class View implements GLEventListener, MouseListener, Observer {
         target.update(gl);
     }
     private void drawShapes(GL2 gl){
+        collisionList = new ArrayList<Collision>();
         for (Shape s:model.getShapes()){
             s.update(gl);
         }
         for (Shape s: model.getShapes()) {
             checkCollisions(s);
+        }
+
+        trimmedCollisions = new ArrayList<Collision>();
+        boolean add;
+        for (Collision c:collisionList){
+            add = true;
+            for(Collision other:trimmedCollisions){
+                if(c.equals(other)){
+                    add = false;
+                }
+            }
+            if(add){
+                trimmedCollisions.add(c);
+            }
+        }
+        for(Collision c:trimmedCollisions){
+            handleCollision(c);
         }
         for (Shape s:model.getShapes()){
             s.move();
@@ -119,10 +140,8 @@ public class View implements GLEventListener, MouseListener, Observer {
                 for(Point2f p:s.getPoints()) {
                     if (each.containsPoint(p)) {
                         //One of the points of shape s has crossed an edge of shape each
-                        Collision = new Collision(s, each, p);
-                        //Find the edge the shape hit
-                        Vector2d edge = each.violatingInsideEdge(p);
-                        handleCollision(s, each, edge, p);
+                        Collision collision = new Collision(s, each, p);
+                        collisionList.add(collision);
                         break;
                     }
                 }
@@ -130,15 +149,25 @@ public class View implements GLEventListener, MouseListener, Observer {
         }
     }
 
-    private void handleCollision(Shape encroachingShape, Shape edgeShape, Vector2d edge, Point2f p){
+    private void handleCollision(Collision c){
+        Shape edgeShape = c.getS2();
+        Shape encroachingShape = c.getS1();
+        Vector2d edge = edgeShape.violatingInsideEdge(c.getP());
+
         Vector2d encroachingShapeMovement = encroachingShape.getMovement();
         Vector2d edgeShapeMovement = edgeShape.getMovement();
-        Vector2d lineBetween = new Vector2d(edgeShape.getX() - encroachingShape.getX(), edgeShape.getY() - encroachingShape.getY());
-        boolean edgeMovingAway = edgeShapeMovement.angle(lineBetween) > Math.PI/2;
-        boolean encroachingShapeMovingAway = encroachingShapeMovement.angle(lineBetween) > Math.PI/2;
-        if( edgeMovingAway && encroachingShapeMovingAway){
-            return;
-        }
+
+//        Point2f predictedEdgeShapeLoc = new Point2f((float) (edgeShape.getX() + edgeShapeMovement.getX()), (float) (edgeShape.getY() + edgeShapeMovement.getY()));
+//        Point2f predictedEncroachingShapeLoc = new Point2f((float) (encroachingShape.getX() + encroachingShapeMovement.getX()), (float) (encroachingShape.getY() + encroachingShapeMovement.getY()));
+//        if(controller.distanceBetween(predictedEdgeShapeLoc, predictedEncroachingShapeLoc) > controller.distanceBetween(edgeShape, encroachingShape)){
+//            return;
+//        }
+        // Vector2d lineBetween = new Vector2d(edgeShape.getX() - encroachingShape.getX(), edgeShape.getY() - encroachingShape.getY());
+        //        //boolean edgeMovingAway = edgeShapeMovement.angle(lineBetween) > Math.PI/2;
+//        //boolean encroachingShapeMovingAway = encroachingShapeMovement.angle(lineBetween) > Math.PI/2;
+//        if(edgeMovingAway && encroachingShapeMovingAway){
+//            return;
+//        }
 
         //Get the normal vector to the edge
         Vector2d rightNormal = new Vector2d(edge.getY(), -edge.getX());
@@ -146,16 +175,17 @@ public class View implements GLEventListener, MouseListener, Observer {
         rightNormal.scale(encroachingShapeMovement.dot(rightNormal) * 2);
         //The actual reflection vector
         Vector2d newEncroachingShapeMovement = new Vector2d(encroachingShapeMovement.getX() - rightNormal.getX(), encroachingShapeMovement.getY() - rightNormal.getY());
+        //Vector2d newEncroachingShapeMovement = new Vector2d(-encroachingShapeMovement.getX() , -encroachingShapeMovement.getY());
 
-
-        //Get the normal vector to the edge
-        rightNormal = new Vector2d(edge.getY(), -edge.getX());
-        rightNormal.normalize();
-        rightNormal.scale(edgeShapeMovement.dot(rightNormal) * 2);
-        Vector2d newEdgeShapeMovement = new Vector2d(edgeShapeMovement.getX() - rightNormal.getX(), edgeShapeMovement.getY() - rightNormal.getY());
+//        //Get the normal vector to the edge
+//        rightNormal = new Vector2d(edge.getY(), -edge.getX());
+//        rightNormal.normalize();
+//        rightNormal.scale(edgeShapeMovement.dot(rightNormal) * 2);
+//        //Vector2d newEdgeShapeMovement = new Vector2d(edgeShapeMovement.getX() - rightNormal.getX(), edgeShapeMovement.getY() - rightNormal.getY());
+//        Vector2d newEdgeShapeMovement = new Vector2d(-edgeShapeMovement.getX(),-edgeShapeMovement.getY());
 
         encroachingShape.setMovement(newEncroachingShapeMovement);
-        edgeShape.setMovement(newEdgeShapeMovement);
+       // edgeShape.setMovement(newEdgeShapeMovement);
     }
 
     public int getWidth(){
