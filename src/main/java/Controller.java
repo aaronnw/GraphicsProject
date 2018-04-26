@@ -66,7 +66,7 @@ public class Controller {
         //Can change these later for harder levels
         //Should be moved to model
         int maxShapeSize = 100;
-        int minShapeSize = 20;
+        int minShapeSize = 40;
         int maxVel = 100;
         int minVel = 50;
 
@@ -78,11 +78,27 @@ public class Controller {
             int y = playAreaTop + rand.nextInt(view.getHeight()-size-playAreaTop) + size/2;
             int colorVal = rand.nextInt(colors.length);
             Shape shape;
-            int shapeType = rand.nextInt(1)+1;
-            if(shapeType == 1) {
-                shape = new Triangle(x, y, size);
-            }else {
-                shape = new Circle(x, y, size);
+            int shapeType = rand.nextInt(4);
+            switch (shapeType){
+                case 0:
+                    shape = new Triangle(x, y, size);
+                    break;
+                case 1:
+
+                    shape = new Square(x, y, size);
+                    break;
+                case 2:
+                    shape = new Hexagon(x, y, size);
+                    break;
+                case 3:
+                    shape = new Octagon(x, y, size);
+                    break;
+                case 4:
+                    shape = new Circle(x, y, size);
+                    break;
+                default:
+                    shape = new Circle(x, y, size);
+                    break;
             }
 
             shape.setColor(colors[colorVal]);
