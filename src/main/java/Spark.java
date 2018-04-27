@@ -9,6 +9,7 @@ public class Spark extends Triangle {
 
     public Spark(float x, float y, Vector2d direction){
         super(x, y, 7, direction, 200, Color.YELLOW);
+        super.setRotationAmount(rand.nextDouble()*Math.PI);
     }
     @Override
     public void draw(GL2 gl){

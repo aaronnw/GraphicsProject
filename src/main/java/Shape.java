@@ -221,6 +221,9 @@ public abstract class Shape{
     public void setSpeed(int speed){
         this.speed = speed;
     }
+    public void setRotationAmount(double newAmount) {
+        this.rotationAmount = newAmount;
+    }
     public double getRotationAmount() {
         return rotationAmount;
     }
