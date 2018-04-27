@@ -23,6 +23,7 @@ public abstract class Shape{
     ArrayList<Point2f> points;
     double offsetVal = 0;
     ArrayList<Vector2d> crackVectors = new ArrayList<Vector2d>();
+    ArrayList<ArrayList<Vector2d>> cracks = new  ArrayList<ArrayList<Vector2d>>();
     Random rand = new Random();
 
     public void move(){
@@ -96,16 +97,20 @@ public abstract class Shape{
     }
 
     public void addCrack(){
-        crackVectors = new ArrayList<Vector2d>();
+        //crackVectors = new ArrayList<Vector2d>();
         int start = rand.nextInt(points.size());
         Point2f startPoint = points.get(start);
-        createCrack(startPoint.getX(), startPoint.getY(), x, y, 4);
+        ArrayList<Vector2d> crack = createCrack(x, y, startPoint.getX(), startPoint.getY(),4);
+        cracks.add(crack);
     }
 
     public void drawCracks(GL2 gl) {
-        if(crackVectors.isEmpty()){
-            return;
+        for (ArrayList<Vector2d> crack : cracks) {
+            drawCrack(gl, crack);
         }
+    }
+
+    public void drawCrack(GL2 gl, ArrayList<Vector2d> crack){
         float startX = x;
         float startY = y;
         float nextX;
@@ -113,8 +118,9 @@ public abstract class Shape{
         gl.glColor3f(0.1f, 0.1f, 0.1f);
         gl.glLineWidth(2);
         gl.glBegin(GL.GL_LINE_STRIP);
-        for (Vector2d v : crackVectors) {
-            nextX = startX + (float)v.getX();
+        gl.glVertex2f(startX, startY);
+        for (Vector2d v : crack) {
+            nextX = startX + (float) v.getX();
             nextY = startY + (float) v.getY();
             gl.glVertex2f(nextX, nextY);
             startX = nextX;
@@ -243,17 +249,20 @@ public abstract class Shape{
     public double distanceBetween(Point2f p1, Point2f p2){
         return Math.sqrt(Math.pow(p1.getX()-p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
     }
-    public void createCrack(float x1, float y1, float x2, float y2, int z){
-        if (z < 2) {
-            crackVectors.add(new Vector2d(x2-x1, y2-y1));
-        }
-        else {
-            float mid_x = (x1 + x2)/2;
-            float mid_y = (y1 + y2)/2;
-            mid_x +=  (float) (rand.nextDouble()-.5)*10*z;
-            mid_y +=  (float) (rand.nextDouble()-.5)*10*z;
-            createCrack(x2,y2,mid_x,mid_y, z/2);
-            createCrack(mid_x,mid_y,x1,y1,z/2);
-        }
+    public ArrayList<Vector2d> createCrack(float x1, float y1, float x2, float y2, int z){
+        ArrayList<Vector2d> crack = new ArrayList<Vector2d>();
+        crack.add(new Vector2d(x2-x1, y2-y1));
+        return crack;
+//        if (z < 2) {
+//            crackVectors.add(new Vector2d(x2-x1, y2-y1));
+//        }
+//        else {
+//            float mid_x = (x1 + x2)/2;
+//            float mid_y = (y1 + y2)/2;
+//            mid_x +=  (float) (rand.nextDouble()-.5)*10*z;
+//            mid_y +=  (float) (rand.nextDouble()-.5)*10*z;
+//            createCrack(x2,y2,mid_x,mid_y, z/2);
+//            createCrack(mid_x,mid_y,x1,y1,z/2);
+//        }
     }
 }
