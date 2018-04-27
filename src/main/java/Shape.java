@@ -74,7 +74,7 @@ public abstract class Shape{
     }
     public void draw(GL2 gl){
         gl.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, color.getA());
-        gl.glBegin(GL2.GL_LINE_STRIP);
+        gl.glBegin(GL2.GL_POLYGON);
         for(Point2f p:points){
             gl.glVertex2f(p.x, p.y);
         }

@@ -4,7 +4,6 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
 import java.awt.*;
@@ -54,7 +53,7 @@ public class Controller {
         canvas.addGLEventListener(view);
         canvas.addMouseListener(view);
 
-        addShapes(3);
+        addShapes(10);
         setTarget();
         setContainer();
 
@@ -65,8 +64,8 @@ public class Controller {
     public void addShapes(int numShapes){
         //Can change these later for harder levels
         //Should be moved to model
-        int maxShapeSize = 300;
-        int minShapeSize = 250;
+        int maxShapeSize = 150;
+        int minShapeSize = 100;
         int maxVel = 100;
         int minVel = 50;
 
@@ -78,8 +77,8 @@ public class Controller {
             int y = playAreaTop + rand.nextInt(view.getHeight()-size-playAreaTop) + size/2;
             int colorVal = rand.nextInt(colors.length);
             Shape shape;
-            int shapeType = 1;
-            //int shapeType = rand.nextInt(4);
+            //int shapeType = 1;
+            int shapeType = rand.nextInt(4);
             switch (shapeType){
                 case 0:
                     shape = new Triangle(x, y, size);
