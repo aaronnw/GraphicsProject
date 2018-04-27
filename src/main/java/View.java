@@ -149,12 +149,17 @@ public class View implements GLEventListener, MouseListener, Observer {
         }
     }
     private void drawBubbles(GL2 gl){
-        for (Shape s: model.getBubbles()) {
+        Iterator<Shape> iter = model.getBubbles().iterator();
+        while (iter.hasNext()) {
+            Shape s = iter.next();
             s.update(gl);
             gl.glLineWidth(1);
             s.drawOutline(gl);
             s.drawHighlight(gl);
             s.move();
+            if(s.getY() < -s.getSize()){
+                iter.remove();
+            }
         }
     }
     private void drawSparks(GL2 gl){
