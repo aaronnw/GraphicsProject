@@ -133,32 +133,45 @@ public class Controller {
         model.setContainer(container);
     }
     public void processClick(Point2f p){
-        Iterator<Shape> iter = model.getShapes().iterator();
-        Shape target = model.getTarget();
-        Color targetColor = target.getColor();
-        boolean shapeClicked = false;
-        while (iter.hasNext()) {
-            Shape s = iter.next();
-            //If this is the shape we clicked
-            if (s.containsPoint(p)) {
-                Color clickedColor = s.getColor();
-                System.out.println("Target color:" + targetColor);
-                System.out.println("color clicked: " + clickedColor);
-                if(targetColor == clickedColor && target.getClass().equals(s.getClass())){
-                    iter.remove();
-                    addShapes(1);
-                    setTarget();
-                    return;
-                }
-                else{
-                    shapeClicked = true;
+        // will be accessed only when the game starts
+        if(!model.beginClick){
+            // if user pressed within the beginButton area
+            if(view.beginButton.containsPoint(p)){
+                model.beginClick = true;
+            }
+
+        }
+        // will be accessed when a new level is reached
+        else if(model.newLevel){
+
+        }
+        else {
+            Iterator<Shape> iter = model.getShapes().iterator();
+            Shape target = model.getTarget();
+            Color targetColor = target.getColor();
+            boolean shapeClicked = false;
+            while (iter.hasNext()) {
+                Shape s = iter.next();
+                //If this is the shape we clicked
+                if (s.containsPoint(p)) {
+                    Color clickedColor = s.getColor();
+                    System.out.println("Target color:" + targetColor);
+                    System.out.println("color clicked: " + clickedColor);
+                    if (targetColor == clickedColor && target.getClass().equals(s.getClass())) {
+                        iter.remove();
+                        addShapes(1);
+                        setTarget();
+                        return;
+                    } else {
+                        shapeClicked = true;
+                    }
                 }
             }
-        }
-        if(!shapeClicked) {
-            Circle bubble = new Circle(p.getX(), p.getY(), 70, new Vector2d(0, -1), 20, Color.WHITE);
-            bubble.setAlpha(.5f);
-            model.addBubble(bubble);
+            if (!shapeClicked) {
+                Circle bubble = new Circle(p.getX(), p.getY(), 70, new Vector2d(0, -1), 20, Color.WHITE);
+                bubble.setAlpha(.5f);
+                model.addBubble(bubble);
+            }
         }
     }
     public double distanceBetween(Shape s1, Shape s2){

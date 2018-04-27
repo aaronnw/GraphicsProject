@@ -11,6 +11,9 @@ public class Model extends Observable{
     Container container;
     Level current;
     int lives;
+    public boolean beginClick = false;
+    public boolean newLevel = false;
+    public int levelNumb;
 
     public Model(){
         shapes =  new ArrayList<Shape>();
