@@ -8,11 +8,10 @@ public class Driver {
         int width = 1000;
         int height = 1100;
         Model m = new Model();
-        View v = new View();
+        View v = new View(m);
         m.addObserver(v);
         Controller c = new Controller(m, v);
         v.setController(c);
-        v.setModel(m);
         c.init(width, height);
     }
 }

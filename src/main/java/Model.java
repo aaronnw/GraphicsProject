@@ -8,12 +8,13 @@ public class Model extends Observable{
     ArrayList<Shape> shapes;
     ArrayList<Shape> bubbles;
     Shape target;
+    private Shape beginButton;
     Container container;
     Level current;
     int lives;
-    public boolean beginClick = false;
-    public boolean newLevel = false;
-    public int levelNumb;
+    private boolean gameStarted = false;
+    private boolean newLevel = false;
+    private int levelNum;
 
     public Model(){
         shapes =  new ArrayList<Shape>();
@@ -58,6 +59,35 @@ public class Model extends Observable{
         return  bubbles;
     }
 
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
 
+    public void setGameStarted(boolean gameStarted) {
+        this.gameStarted = gameStarted;
+    }
 
+    public boolean isNewLevel() {
+        return newLevel;
+    }
+
+    public void setNewLevel(boolean newLevel) {
+        this.newLevel = newLevel;
+    }
+
+    public int getLevelNum() {
+        return levelNum;
+    }
+
+    public void setLevelNum(int levelNum) {
+        this.levelNum = levelNum;
+    }
+
+    public Shape getBeginButton() {
+        return beginButton;
+    }
+
+    public void setBeginButton(Shape beginButton) {
+        this.beginButton = beginButton;
+    }
 }

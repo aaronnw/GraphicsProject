@@ -134,15 +134,15 @@ public class Controller {
     }
     public void processClick(Point2f p){
         // will be accessed only when the game starts
-        if(!model.beginClick){
+        if(!model.isGameStarted()){
             // if user pressed within the beginButton area
-            if(view.beginButton.containsPoint(p)){
-                model.beginClick = true;
+            if(model.getBeginButton().containsPoint(p)){
+                model.setGameStarted(true);
             }
 
         }
         // will be accessed when a new level is reached
-        else if(model.newLevel){
+        else if(model.isNewLevel()){
 
         }
         else {
