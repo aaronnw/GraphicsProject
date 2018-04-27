@@ -168,7 +168,7 @@ public class Controller {
                 }
             }
             if (!shapeClicked) {
-                Circle bubble = new Circle(p.getX(), p.getY(), 70, new Vector2d(0, -1), 20, Color.WHITE);
+                Bubble bubble = new Bubble(p.getX(), p.getY(), 70, new Vector2d(0, -1), 20, Color.WHITE);
                 bubble.setAlpha(.5f);
                 model.addBubble(bubble);
             }
