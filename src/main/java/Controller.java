@@ -53,8 +53,10 @@ public class Controller {
         canvas.addGLEventListener(view);
         canvas.addMouseListener(view);
 
-        model.setLives(3);
-        addShapes(10);
+        Level current = new Level(3, 10, 10, 150, 100, 100, 50);
+        model.setCurrentLevel(current);
+        model.setLives(current.getLives());
+        addShapes(current.getNumShapes());
         setTarget();
         setContainer();
 
@@ -63,12 +65,11 @@ public class Controller {
     }
 
     public void addShapes(int numShapes){
-        //Can change these later for harder levels
-        //Should be moved to model
-        int maxShapeSize = 150;
-        int minShapeSize = 100;
-        int maxVel = 100;
-        int minVel = 50;
+        Level current = model.getCurrentLevel();
+        int minShapeSize = current.getMinShapeSize();
+        int maxShapeSize = current.getMaxShapeSize();
+        int minVel = current.getMinVel();
+        int maxVel = current.getMaxVel();
 
         Random rand = new Random();
         Color[] colors = Color.values();

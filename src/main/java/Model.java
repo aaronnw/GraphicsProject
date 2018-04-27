@@ -8,6 +8,7 @@ public class Model extends Observable{
     ArrayList<Shape> shapes;
     Shape target;
     Container container;
+    Level current;
     int lives;
 
     public Model(){
@@ -37,7 +38,13 @@ public class Model extends Observable{
         this.lives = lives;
     }
     public int getLives(){
-        return lives; 
+        return lives;
+    }
+    public void setCurrentLevel(Level level){
+        current = level;
+    }
+    public Level getCurrentLevel(){
+        return current;
     }
 
 
