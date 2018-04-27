@@ -3,10 +3,13 @@ import com.jogamp.opengl.glu.GLU;
 
 import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Observable;
 import java.util.Observer;
+import com.jogamp.opengl.util.awt.TextRenderer;
+import javax.swing.*;
 
 
 /**
@@ -19,6 +22,8 @@ public class View implements GLEventListener, MouseListener, Observer {
     private Controller controller;
     private Model model;
     private int playAreaTop;
+    private TextRenderer renderer;
+    public Shape beginButton;
 
     public View(){
 
@@ -52,13 +57,13 @@ public class View implements GLEventListener, MouseListener, Observer {
     public void update(){
         counter ++;
     }
+
     private  void render(GLAutoDrawable drawable){
         GL2 gl = drawable.getGL().getGL2();
-       gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
         setPixelProjection(gl, drawable);
-        drawTargetArea(gl);
-        drawTarget(gl);
-        drawShapes(gl);
+        beginGame(gl, drawable);
+
     }
     private void	setPixelProjection(GL2 gl, GLAutoDrawable drawable)
     {
@@ -123,6 +128,55 @@ public class View implements GLEventListener, MouseListener, Observer {
                     }
                 }
             }
+        }
+
+    }
+
+    /**
+        Created by Taylor Humphrey
+     */
+    public void beginGame(GL2 gl, GLAutoDrawable drawable){
+        // view that shows when the game begins
+        if(!model.beginClick){
+            renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 38));
+            renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+            renderer.setColor(1.0f, 1.0f, 0, 1.0f);
+            renderer.draw("Welcome to Click-Tap-Match!", w/2 - 240, h/2 + 150);
+            renderer.endRendering();
+
+            beginButton = new Square(w/2,h/2, 120);
+
+            beginButton.update(gl);
+
+            renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 30));
+            renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+            renderer.setColor(0.0f, 0.0f, 0.0f, 1.0f);
+            renderer.draw("Begin", w/2-43, h/2-5);
+            renderer.endRendering();
+        }
+        // view that shows for every new level
+        else if(model.newLevel){
+            renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 38));
+            renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+            renderer.setColor(1.0f, 1.0f, 0, 1.0f);
+            renderer.draw("Congratulation! You have completed level: " + model.levelNumb, w/2 - 240, h/2 + 150);
+            renderer.endRendering();
+
+            beginButton = new Square(w/2,h/2, 120);
+
+            beginButton.update(gl);
+
+            renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 20));
+            renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+            renderer.setColor(0.0f, 0.0f, 0.0f, 1.0f);
+            renderer.draw("Continue", w/2-43, h/2-5);
+            renderer.endRendering();
+        }
+        // draws every level
+        else{
+            drawTargetArea(gl);
+            drawTarget(gl);
+            drawShapes(gl);
         }
 
     }

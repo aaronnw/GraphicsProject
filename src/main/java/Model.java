@@ -8,6 +8,9 @@ public class Model extends Observable{
     ArrayList<Shape> shapes;
     Shape target;
     Container container;
+    public boolean beginClick = false;
+    public boolean newLevel = false;
+    public int levelNumb;
 
     public Model(){
         shapes = new ArrayList();

@@ -114,21 +114,35 @@ public class Controller {
         model.setContainer(container);
     }
     public void processClick(Point2f p){
-        Iterator<Shape> iter = model.getShapes().iterator();
-        Shape target = model.getTarget();
-        Color targetColor = target.getColor();
-        while (iter.hasNext()) {
-            Shape s = iter.next();
-            //If this is the shape we clicked
-            if (s.containsPoint(p)) {
-                Color clickedColor = s.getColor();
-                System.out.println("Target color:" + targetColor);
-                System.out.println("color clicked: " + clickedColor);
-                if(targetColor == clickedColor && target.getClass().equals(s.getClass())){
-                    iter.remove();
-                    addShapes(1);
-                    setTarget();
-                    return;
+        // will be accessed only when the game starts
+        if(!model.beginClick){
+            // if user pressed within the beginButton area
+            if(view.beginButton.containsPoint(p)){
+                model.beginClick = true;
+            }
+
+        }
+        // will be accessed when a new level is reached
+        else if(model.newLevel){
+
+        }
+        else{
+            Iterator<Shape> iter = model.getShapes().iterator();
+            Shape target = model.getTarget();
+            Color targetColor = target.getColor();
+            while (iter.hasNext()) {
+                Shape s = iter.next();
+                //If this is the shape we clicked
+                if (s.containsPoint(p)) {
+                    Color clickedColor = s.getColor();
+                    System.out.println("Target color:" + targetColor);
+                    System.out.println("color clicked: " + clickedColor);
+                    if(targetColor == clickedColor && target.getClass().equals(s.getClass())){
+                        iter.remove();
+                        addShapes(1);
+                        setTarget();
+                        return;
+                    }
                 }
             }
         }
