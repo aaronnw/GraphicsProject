@@ -1,0 +1,37 @@
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import javafx.geometry.Point3D;
+
+import javax.vecmath.Point2d;
+import javax.vecmath.Vector2d;
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Effects {
+    ArrayList<Point2d> cracks = new ArrayList<>();
+    public Effects(){
+    }
+
+    public ArrayList<Point2d> createCracks(double x1,double y1, double x2,double y2,int z){
+        if (z < 3) {
+            cracks.add(new Point2d(x1,y1));
+            cracks.add(new Point2d(x2,y2));
+        }
+        else {
+            double mid_x = (x2+x1)/2;
+            double mid_y = (y2+y1)/2;
+            mid_x += (Math.random()-.5)*z;
+            mid_y += (Math.random()-.5)*z;
+            createCracks(x1,y1,mid_x,mid_y,z/2);
+            createCracks(x2,y2,mid_x,mid_y,z/2);
+        }
+        return cracks;
+    }
+
+    public Circle createBubbles(float x1, float y1){
+        Vector2d move = new Vector2d(0, -60);
+        Circle circle = new Circle(x1, y1, 70, move, Color.WHITE);
+        circle.setAlpha(.5f);
+        return circle;
+    }
+}
