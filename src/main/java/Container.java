@@ -14,7 +14,7 @@ public class Container {
     ArrayList<Vector2d> vectors;
     ArrayList<Point2f> points;
     Point2f center;
-    double offsetVal = .05;
+    double offsetVal = 0;
 
     public Container(ArrayList<Point2f> points){
         this.color = Color.WHITE;

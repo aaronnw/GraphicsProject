@@ -74,7 +74,7 @@ public abstract class Shape{
     }
     public void draw(GL2 gl){
         gl.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, color.getA());
-        gl.glBegin(GL2.GL_LINE_STRIP);
+        gl.glBegin(GL2.GL_POLYGON);
         for(Point2f p:points){
             gl.glVertex2f(p.x, p.y);
         }
@@ -115,20 +115,29 @@ public abstract class Shape{
         return null;
     }
     public Vector2d violatingInsideEdge(Point2f p){
-        float beginX = points.get(0).getX();
-        float beginY = points.get(0).getY();
-        float endX;
-        float endY;
-        for(Vector2d v: vectors){
-            endX = beginX + (float) v.x;
-            endY = beginY + (float) v.y;
-            if(((endX-beginX) * (p.y - beginY) - (endY-beginY)*(p.x - beginX)) < -offsetVal){
-                return v;
+        Point2f closestPoint = points.get(0);
+        double distanceToClosest = Double.MAX_VALUE;
+        Point2f nextClosestPoint = points.get(1);
+        double distanceToNextClosest = Double.MAX_VALUE;
+        int closestPointIndex;
+        for(Point2f vertex:points){
+            double distance = distanceBetween(vertex, p);
+            if(distance < distanceToClosest){
+                nextClosestPoint = closestPoint;
+                distanceToNextClosest = distanceBetween(p, nextClosestPoint);
+                closestPoint = vertex;
+                distanceToClosest = distanceBetween(p, closestPoint);
+            }else if(distance < distanceToNextClosest){
+                nextClosestPoint = vertex;
+                distanceToNextClosest = distanceBetween(p, nextClosestPoint);
             }
-            beginX = endX;
-            beginY = endY;
         }
-        return null;
+        ArrayList<Point2f> closestPoints = new ArrayList<Point2f>();
+        closestPoints.add(closestPoint);
+        closestPoints.add(nextClosestPoint);
+        closestPoints = sortPoints(closestPoints);
+        closestPointIndex =  points.indexOf(closestPoints.get(0));
+        return vectors.get(closestPointIndex);
     }
     public ArrayList<Point2f> getPoints(){
         return  points;
@@ -149,5 +158,30 @@ public abstract class Shape{
     }
     public double getRotationAmount() {
         return rotationAmount;
+    }
+    public ArrayList<Point2f> sortPoints(ArrayList<Point2f> pointList){
+        if(pointList.size() < 2){
+            return pointList;
+        }
+        TreeMap rankedPoints = new TreeMap();
+        double highestPoint = Double.MIN_VALUE;
+        Point2f top = new Point2f();
+        for(Point2f p:pointList){
+            if(p.getY() >highestPoint) {
+                highestPoint = p.getY();
+                top = p;
+            }
+        }
+        Vector2d difference;
+        Vector2d reference = new Vector2d(1,0);
+        for(Point2f p:pointList){
+            difference = new Vector2d(p.getX()- top.getX(), p.getY()-top.getY());
+            double angle = reference.angle(difference);
+            rankedPoints.put(angle, p);
+        }
+        return new ArrayList<Point2f>(rankedPoints.values());
+    }
+    public double distanceBetween(Point2f p1, Point2f p2){
+        return Math.sqrt(Math.pow(p1.getX()-p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
     }
 }

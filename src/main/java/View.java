@@ -5,6 +5,7 @@ import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -19,6 +20,8 @@ public class View implements GLEventListener, MouseListener, Observer {
     private Controller controller;
     private Model model;
     private int playAreaTop;
+    private ArrayList<Collision> collisionList;
+    private ArrayList<Collision> trimmedCollisions;
     public View(){
 
     }
@@ -81,24 +84,45 @@ public class View implements GLEventListener, MouseListener, Observer {
         target.update(gl);
     }
     private void drawShapes(GL2 gl){
+        collisionList = new ArrayList<Collision>();
         for (Shape s:model.getShapes()){
             s.update(gl);
         }
         for (Shape s: model.getShapes()) {
-            checkCollisions(s);
+            checkShapeCollision(s);
+        }
+
+        trimmedCollisions = new ArrayList<Collision>();
+        boolean add;
+        for (Collision c:collisionList){
+            add = true;
+            for(Collision other:trimmedCollisions){
+                if(c.equals(other)){
+                    add = false;
+                }
+            }
+            if(add){
+                trimmedCollisions.add(c);
+            }
+        }
+        for(Collision c:trimmedCollisions){
+            handleCollision(c);
+        }
+        for (Shape s: model.getShapes()) {
+            checkWallCollision(s);
         }
         for (Shape s:model.getShapes()){
             s.move();
         }
     }
-    private void checkCollisions(Shape s){
+    private void checkWallCollision(Shape s) {
         Container container = model.getContainer();
-        for(Point2f p:s.getPoints()) {
+        for (Point2f p : s.getPoints()) {
             if (!container.containsPoint(p)) {
                 //Find the vector from the point to the center
                 Vector2d toCenter = new Vector2d(container.getCenter().getX() - p.getX(), container.getCenter().getY() - p.getY());
                 //If the shape is already headed back to the center don't flip the direction
-                if(s.getMovement().angle(toCenter) < Math.PI/2){
+                if (s.getMovement().angle(toCenter) < Math.PI / 2) {
                     return;
                 }
                 //Find the edge the shape hit
@@ -114,13 +138,15 @@ public class View implements GLEventListener, MouseListener, Observer {
                 return;
             }
         }
+    }
+    private void checkShapeCollision(Shape s){
         for(Shape each:model.getShapes()){
             if(!s.equals(each) && controller.distanceBetween(s, each) < s.getSize() + each.getSize()){
                 for(Point2f p:s.getPoints()) {
                     if (each.containsPoint(p)) {
-                        //Find the edge the shape hit
-                        Vector2d edge = each.violatingInsideEdge(p);
-                        handleCollision(s, each, edge, p);
+                        //One of the points of shape s has crossed an edge of shape each
+                        Collision collision = new Collision(s, each, p);
+                        collisionList.add(collision);
                         break;
                     }
                 }
@@ -128,7 +154,11 @@ public class View implements GLEventListener, MouseListener, Observer {
         }
     }
 
-    private void handleCollision(Shape encroachingShape, Shape edgeShape, Vector2d edge, Point2f p){
+
+    private void handleCollision(Collision collision){
+        Shape encroachingShape  = collision.getS1();
+        Shape edgeShape = collision.getS2();
+
         Vector2d encroachingShapeMovement = encroachingShape.getMovement();
         Vector2d edgeShapeMovement = edgeShape.getMovement();
         Vector2d lineBetween = new Vector2d(edgeShape.getX() - encroachingShape.getX(), edgeShape.getY() - encroachingShape.getY());
@@ -160,7 +190,6 @@ public class View implements GLEventListener, MouseListener, Observer {
         encroachingShape.setMovement(newEncroachingShapeMovement);
         edgeShape.setMovement(newEdgeShapeMovement);
     }
-
     public int getWidth(){
         return w;
     }
