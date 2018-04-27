@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import com.jogamp.opengl.util.awt.TextRenderer;
@@ -138,7 +139,7 @@ public class View implements GLEventListener, MouseListener, Observer {
         }
         for(Collision c:trimmedCollisions){
             handleCollision(c);
-            drawLightning(gl, c.getS1(), c.getS2());
+            createSpark(c.getS1(), c.getS2(), c.getP());
         }
         for (Shape s: model.getShapes()) {
             checkWallCollision(s);
@@ -156,16 +157,28 @@ public class View implements GLEventListener, MouseListener, Observer {
             s.move();
         }
     }
-    private void drawLightning(GL2 gl, Shape shape, Shape target){
-        ArrayList<Point2d> points;
-        points = generateLightning(shape.getX(), shape.getY(), target.getX(), target.getY(), 70);
-        gl.glColor3f(1, 0, 1);
-        gl.glLineWidth(1);
-        gl.glBegin(GL.GL_LINE_STRIP);
-        for (Point2d p : points) {
-           gl.glVertex2d(p.x, p.y);
+    private void drawSparks(GL2 gl){
+        Iterator<Spark> iter = model.getSparks().iterator();
+        while (iter.hasNext()) {
+            Spark s = iter.next();
+            s.update(gl);
+            gl.glLineWidth(1);
+            s.drawOutline(gl);
+            s.move();
+            if(s.isDead()){
+                iter.remove();
+            }
         }
-        gl.glEnd();
+    }
+    private void createSpark(Shape s1, Shape s2, Point2f p){
+        Vector2d lineBetween = new Vector2d(s2.getX() - s1.getX(), s2.getY() - s1.getY());
+        lineBetween.normalize();
+        Vector2d leftNormal = new Vector2d(-lineBetween.getX(), lineBetween.getY());
+        Spark spark1 = new Spark(p.getX(), p.getY(), leftNormal);
+        Vector2d rightNormal = new Vector2d(lineBetween.getX(), -lineBetween.getY());
+        Spark spark2 = new Spark(p.getX(), p.getY(), rightNormal);
+        model.addSpark(spark1);
+        model.addSpark(spark2);
      }
 
 
@@ -294,6 +307,7 @@ public class View implements GLEventListener, MouseListener, Observer {
             drawLives(gl);
             drawShapes(gl);
             drawBubbles(gl);
+            drawSparks(gl);
         }
 
     }
