@@ -1,6 +1,7 @@
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.glu.GLU;
 
+import javax.vecmath.Point2d;
 import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
 import java.awt.event.MouseEvent;
@@ -22,6 +23,7 @@ public class View implements GLEventListener, MouseListener, Observer {
     private int playAreaTop;
     private ArrayList<Collision> collisionList;
     private ArrayList<Collision> trimmedCollisions;
+
     public View(){
 
     }
@@ -56,12 +58,13 @@ public class View implements GLEventListener, MouseListener, Observer {
     }
     private  void render(GLAutoDrawable drawable){
         GL2 gl = drawable.getGL().getGL2();
-       gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
         setPixelProjection(gl, drawable);
         drawTargetArea(gl);
         drawTarget(gl);
         drawLives(gl);
         drawShapes(gl);
+        drawBubbles(gl);
     }
     private void	setPixelProjection(GL2 gl, GLAutoDrawable drawable)
     {
@@ -134,6 +137,7 @@ public class View implements GLEventListener, MouseListener, Observer {
         }
         for(Collision c:trimmedCollisions){
             handleCollision(c);
+            drawLightning(gl, c.getS1(), c.getS2());
         }
         for (Shape s: model.getShapes()) {
             checkWallCollision(s);
@@ -142,14 +146,36 @@ public class View implements GLEventListener, MouseListener, Observer {
             s.move();
         }
     }
-    private void checkWallCollision(Shape s) {
+    private void drawBubbles(GL2 gl){
+        for (Shape s: model.getBubbles()) {
+            s.update(gl);
+            gl.glLineWidth(1);
+            s.drawOutline(gl);
+            s.drawHighlight(gl);
+            s.move();
+        }
+    }
+    private void drawLightning(GL2 gl, Shape shape, Shape target){
+        ArrayList<Point2d> points;
+        points = generateLightning(shape.getX(), shape.getY(), target.getX(), target.getY(), 70);
+        gl.glColor3f(1, 0, 1);
+        gl.glLineWidth(1);
+        gl.glBegin(GL.GL_LINE_STRIP);
+        for (Point2d p : points) {
+           gl.glVertex2d(p.x, p.y);
+        }
+        gl.glEnd();
+     }
+
+
+    private void checkWallCollision(Shape s){
         Container container = model.getContainer();
         for (Point2f p : s.getPoints()) {
             if (!container.containsPoint(p)) {
                 //Find the vector from the point to the center
                 Vector2d toCenter = new Vector2d(container.getCenter().getX() - p.getX(), container.getCenter().getY() - p.getY());
                 //If the shape is already headed back to the center don't flip the direction
-                if (s.getMovement().angle(toCenter) < Math.PI / 2) {
+                if (s.getDirection().angle(toCenter) < Math.PI / 2) {
                     return;
                 }
                 //Find the edge the shape hit
@@ -157,11 +183,12 @@ public class View implements GLEventListener, MouseListener, Observer {
                 //Get the normal vector to the edge
                 Vector2d normal = new Vector2d(edge.getY(), -edge.getX());
                 normal.normalize();
-                Vector2d v = new Vector2d(s.getMovement().getX(), s.getMovement().getY());
+                Vector2d v = new Vector2d(s.getDirection().getX(), s.getDirection().getY());
                 normal.scale(v.dot(normal) * 2);
                 //The actual reflection vector
                 Vector2d newMovement = new Vector2d(v.getX() - normal.getX(), v.getY() - normal.getY());
-                s.setMovement(newMovement);
+                s.setDirection(newMovement);
+                s.addCrack();
                 return;
             }
         }
@@ -186,37 +213,41 @@ public class View implements GLEventListener, MouseListener, Observer {
         Shape encroachingShape  = collision.getS1();
         Shape edgeShape = collision.getS2();
 
-        Vector2d encroachingShapeMovement = encroachingShape.getMovement();
-        Vector2d edgeShapeMovement = edgeShape.getMovement();
+        Vector2d encroachingShapeMovement = encroachingShape.getDirection();
+        Vector2d edgeShapeMovement = edgeShape.getDirection();
         Vector2d lineBetween = new Vector2d(edgeShape.getX() - encroachingShape.getX(), edgeShape.getY() - encroachingShape.getY());
         boolean edgeMovingAway = edgeShapeMovement.angle(lineBetween) > Math.PI/2;
         boolean encroachingShapeMovingAway = encroachingShapeMovement.angle(lineBetween) > Math.PI/2;
         if( edgeMovingAway && encroachingShapeMovingAway){
             return;
         }
-//
 
         lineBetween.normalize();
-
-//        //Get the normal vector to the edge
-//        Vector2d rightNormal = new Vector2d(edge.getY(), -edge.getX());
-//        rightNormal.normalize();
-//        rightNormal.scale(encroachingShapeMovement.dot(rightNormal) * 2);
-//        //The actual reflection vector
+        Vector2d newEdgeShapeMovement =lineBetween;
         lineBetween = new Vector2d(-lineBetween.getX(), -lineBetween.getY());
         Vector2d newEncroachingShapeMovement = lineBetween;
 
-        lineBetween = new Vector2d(-lineBetween.getX(), -lineBetween.getY());
-
-//        //Get the normal vector to the edge
-//        Vector2d leftNormal = new Vector2d(-edge.getY(), edge.getX());
-//        leftNormal.normalize();
-//        leftNormal.scale(edgeShapeMovement.dot(leftNormal) * 2);
-        Vector2d newEdgeShapeMovement =lineBetween;
-
-        encroachingShape.setMovement(newEncroachingShapeMovement);
-        edgeShape.setMovement(newEdgeShapeMovement);
+        encroachingShape.setDirection(newEncroachingShapeMovement);
+        edgeShape.setDirection(newEdgeShapeMovement);
     }
+
+    public ArrayList<Point2d> generateLightning(double x1,double y1, double x2,double y2,int z){
+        ArrayList<Point2d> lightning = new ArrayList<Point2d>();
+        if (z < 3) {
+            lightning.add(new Point2d(x1,y1));
+            lightning.add(new Point2d(x2,y2));
+        }
+        else {
+            double mid_x = (x2+x1)/2;
+            double mid_y = (y2+y1)/2;
+            mid_x += (Math.random()-.5)*z;
+            mid_y += (Math.random()-.5)*z;
+            generateLightning(x1,y1,mid_x,mid_y,z/2);
+            generateLightning(x2,y2,mid_x,mid_y,z/2);
+        }
+        return lightning;
+    }
+
     public int getWidth(){
         return w;
     }

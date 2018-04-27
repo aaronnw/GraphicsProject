@@ -6,13 +6,15 @@ import java.util.Observable;
  */
 public class Model extends Observable{
     ArrayList<Shape> shapes;
+    ArrayList<Shape> bubbles;
     Shape target;
     Container container;
     Level current;
     int lives;
 
     public Model(){
-        shapes = new ArrayList();
+        shapes =  new ArrayList<Shape>();
+        bubbles = new ArrayList<Shape>();
     }
     public void addShape(Shape s){
         shapes.add(s);
@@ -46,6 +48,13 @@ public class Model extends Observable{
     public Level getCurrentLevel(){
         return current;
     }
+    public void addBubble(Shape s){
+        bubbles.add(s);
+    }
+    public ArrayList<Shape> getBubbles(){
+        return  bubbles;
+    }
+
 
 
 }

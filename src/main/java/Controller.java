@@ -109,7 +109,7 @@ public class Controller {
             double movementX = rand.nextDouble();
             double movementY = 1-movementX;
             Vector2d movement = new Vector2d(movementX, movementY);
-            shape.setMovement(movement);
+            shape.setDirection(movement);
 
             model.addShape(shape);
         }
@@ -118,7 +118,7 @@ public class Controller {
         ArrayList<Shape> shapeList = model.getShapes();
         int index = rand.nextInt(shapeList.size());
         Shape target = shapeList.get(index).makeCopy();
-        target.setMovement(new Vector2d(0,0));
+        target.setDirection(new Vector2d(0,0));
         target.size = defaultSize;
         model.setTarget(target);
     }
@@ -136,6 +136,7 @@ public class Controller {
         Iterator<Shape> iter = model.getShapes().iterator();
         Shape target = model.getTarget();
         Color targetColor = target.getColor();
+        boolean shapeClicked = false;
         while (iter.hasNext()) {
             Shape s = iter.next();
             //If this is the shape we clicked
@@ -149,7 +150,15 @@ public class Controller {
                     setTarget();
                     return;
                 }
+                else{
+                    shapeClicked = true;
+                }
             }
+        }
+        if(!shapeClicked) {
+            Circle bubble = new Circle(p.getX(), p.getY(), 70, new Vector2d(0, -1), 20, Color.WHITE);
+            bubble.setAlpha(.5f);
+            model.addBubble(bubble);
         }
     }
     public double distanceBetween(Shape s1, Shape s2){

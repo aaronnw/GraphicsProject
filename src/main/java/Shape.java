@@ -1,12 +1,10 @@
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
-
 import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Random;
 import java.util.TreeMap;
-
 
 /**
  * Created by Aaron on 3/9/2018.
@@ -19,14 +17,17 @@ public abstract class Shape{
     int speed;
     double rotationAmount;
     Color color;
-    Vector2d movement;
+    Float alpha = 1f;
+    Vector2d direction;
     ArrayList<Vector2d> vectors;
     ArrayList<Point2f> points;
     double offsetVal = 0;
+    ArrayList<Vector2d> crackVectors = new ArrayList<Vector2d>();
+    Random rand = new Random();
 
     public void move(){
-        x = (float) (x + speed*movement.getX()/10);
-        y = (float) (y + speed*movement.getY()/10);
+        x = (float) (x + speed* direction.getX()/10);
+        y = (float) (y + speed* direction.getY()/10);
     }
     public void setX(float x){
         this.x = x;
@@ -34,19 +35,18 @@ public abstract class Shape{
     public void setY(float y){
         this.y = y;
     }
-    public void setMovement(Vector2d v){
-        movement = v;
+    public void setDirection(Vector2d v){
+        direction = v;
     }
     public float getX() {
         return x;
     }
-
     public float getY() {
         return y;
     }
 
-    public Vector2d getMovement() {
-        return movement;
+    public Vector2d getDirection() {
+        return direction;
     }
     public void populatePoints(){
         points = new ArrayList<Point2f>();
@@ -71,14 +71,64 @@ public abstract class Shape{
         populatePoints();
         populateVectors();
         draw(gl);
+        drawCracks(gl);
     }
     public void draw(GL2 gl){
-        gl.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, color.getA());
+        gl.glEnable(gl.GL_BLEND);
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, alpha);
         gl.glBegin(GL2.GL_POLYGON);
         for(Point2f p:points){
             gl.glVertex2f(p.x, p.y);
         }
         gl.glVertex2f(points.get(0).getX(), points.get(0).getY());
+        gl.glEnd();
+    }
+
+    public void drawOutline(GL2 gl){
+        gl.glColor3f(color.getR() / 255, color.getG() / 255, color.getB() / 255);
+        gl.glBegin(GL2.GL_LINE_LOOP);
+        for(Point2f p:points){
+            gl.glVertex2f(p.x, p.y);
+        }
+        gl.glVertex2f(points.get(0).getX(), points.get(0).getY());
+        gl.glEnd();
+    }
+
+    public void addCrack(){
+        crackVectors = new ArrayList<Vector2d>();
+        int start = rand.nextInt(points.size());
+        Point2f startPoint = points.get(start);
+        createCrack(startPoint.getX(), startPoint.getY(), x, y, 4);
+    }
+
+    public void drawCracks(GL2 gl) {
+        if(crackVectors.isEmpty()){
+            return;
+        }
+        float startX = x;
+        float startY = y;
+        float nextX;
+        float nextY;
+        gl.glColor3f(0.1f, 0.1f, 0.1f);
+        gl.glLineWidth(2);
+        gl.glBegin(GL.GL_LINE_STRIP);
+        for (Vector2d v : crackVectors) {
+            nextX = startX + (float)v.getX();
+            nextY = startY + (float) v.getY();
+            gl.glVertex2f(nextX, nextY);
+            startX = nextX;
+            startY = nextY;
+        }
+        gl.glEnd();
+    }
+
+    public void drawHighlight(GL2 gl){
+        Point2f p = points.get(0);
+        gl.glBegin(GL2.GL_POLYGON);
+        gl.glVertex2f(p.x-5, p.y-10);
+        gl.glVertex2f(p.x -20, p.y-25);
+        gl.glVertex2f(p.x -25, p.y-20);
         gl.glEnd();
     }
 
@@ -148,6 +198,15 @@ public abstract class Shape{
     public Color getColor(){
         return color;
     }
+
+    public void setAlpha(Float alpha) {
+        this.alpha = alpha;
+    }
+
+    public Float getAlpha() {
+        return alpha;
+    }
+
     public int getSize(){
         return size;
     }
@@ -183,5 +242,18 @@ public abstract class Shape{
     }
     public double distanceBetween(Point2f p1, Point2f p2){
         return Math.sqrt(Math.pow(p1.getX()-p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
+    }
+    public void createCrack(float x1, float y1, float x2, float y2, int z){
+        if (z < 2) {
+            crackVectors.add(new Vector2d(x2-x1, y2-y1));
+        }
+        else {
+            float mid_x = (x1 + x2)/2;
+            float mid_y = (y1 + y2)/2;
+            mid_x +=  (float) (rand.nextDouble()-.5)*10*z;
+            mid_y +=  (float) (rand.nextDouble()-.5)*10*z;
+            createCrack(x2,y2,mid_x,mid_y, z/2);
+            createCrack(mid_x,mid_y,x1,y1,z/2);
+        }
     }
 }
