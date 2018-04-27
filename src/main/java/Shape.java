@@ -1,10 +1,15 @@
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
+import javax.vecmath.Point2d;
 import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.TreeMap;
+
+import static com.jogamp.opengl.GL.GL_BLEND;
 
 
 /**
@@ -17,9 +22,11 @@ public abstract class Shape{
     int sideNum;
     double rotationAmount;
     Color color;
+    Float alpha = 1f;
     Vector2d movement;
     ArrayList<Vector2d> vectors;
     ArrayList<Point2f> points;
+    ArrayList<Point2d> crackPoints = new ArrayList<>();
 
     public void move(){
         x = (float) (x + movement.getX()/60);
@@ -37,7 +44,6 @@ public abstract class Shape{
     public float getX() {
         return x;
     }
-
     public float getY() {
         return y;
     }
@@ -70,12 +76,52 @@ public abstract class Shape{
         draw(gl);
     }
     public void draw(GL2 gl){
-        gl.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, color.getA());
+        gl.glEnable(gl.GL_BLEND);
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
+        gl.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, alpha);
         gl.glBegin(GL2.GL_POLYGON);
         for(Point2f p:points){
             gl.glVertex2f(p.x, p.y);
         }
         gl.glVertex2f(points.get(0).getX(), points.get(0).getY());
+        gl.glEnd();
+    }
+
+    public void drawOutline(GL2 gl){
+        gl.glColor3f(color.getR() / 255, color.getG() / 255, color.getB() / 255);
+        gl.glBegin(GL2.GL_LINE_LOOP);
+        for(Point2f p:points){
+            gl.glVertex2f(p.x, p.y);
+        }
+        gl.glVertex2f(points.get(0).getX(), points.get(0).getY());
+        gl.glEnd();
+    }
+
+    public void setCracks(){
+        Random rand = new Random();
+        int start = rand.nextInt(points.size());
+        Effects effects = new Effects();
+        Point2f startPoint = points.get(start);
+        //crackPoints = effects.createCracks(startPoint.getX(), startPoint.getY(), x, y, 75);
+        crackPoints = effects.createCracks(100,100, x, y, 130);
+    }
+
+    public void drawCracks(GL2 gl) {
+        gl.glColor3f(1, 1, 1);
+        gl.glLineWidth(1);
+        gl.glBegin(GL.GL_LINE_STRIP);
+        for (Point2d p : crackPoints) {
+            gl.glVertex2d(p.x, p.y);
+        }
+        gl.glEnd();
+    }
+
+    public void drawHighlight(GL2 gl){
+        Point2f p = points.get(0);
+        gl.glBegin(GL2.GL_POLYGON);
+        gl.glVertex2f(p.x-5, p.y-10);
+        gl.glVertex2f(p.x -20, p.y-25);
+        gl.glVertex2f(p.x -25, p.y-20);
         gl.glEnd();
     }
 
@@ -136,6 +182,15 @@ public abstract class Shape{
     public Color getColor(){
         return color;
     }
+
+    public void setAlpha(Float alpha) {
+        this.alpha = alpha;
+    }
+
+    public Float getAlpha() {
+        return alpha;
+    }
+
     public int getSize(){
         return size;
     }
