@@ -53,6 +53,7 @@ public class Controller {
         canvas.addGLEventListener(view);
         canvas.addMouseListener(view);
 
+        model.setLives(3);
         addShapes(10);
         setTarget();
         setContainer();

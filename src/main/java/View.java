@@ -60,6 +60,7 @@ public class View implements GLEventListener, MouseListener, Observer {
         setPixelProjection(gl, drawable);
         drawTargetArea(gl);
         drawTarget(gl);
+        drawLives(gl);
         drawShapes(gl);
     }
     private void	setPixelProjection(GL2 gl, GLAutoDrawable drawable)
@@ -82,6 +83,32 @@ public class View implements GLEventListener, MouseListener, Observer {
         target.setX(w - 200);
         target.setY(target.getSize()/2 + 10);
         target.update(gl);
+    }
+    private void drawLives(GL2 gl){
+        gl.glColor3f(Color.RED.getR(), Color.RED.getG(), Color.RED.getB());
+        gl.glLineWidth(5);
+        float startX = 40;
+        float startY = playAreaTop - 50;
+        for(int i=0; i < model.getLives(); i++) {
+            drawHeart(gl, startX, startY);
+            startX += 70;
+        }
+    }
+    private void drawHeart(GL2 gl,float  x, float y){
+        float circleRad = 12;
+        gl.glBegin(GL2.GL_POLYGON);
+        drawArc(gl, x + circleRad, y, circleRad);
+        drawArc(gl, x - circleRad, y, circleRad);
+        gl.glVertex2f(x, y+22);
+        gl.glVertex2f(x+circleRad*2, y);
+        gl.glEnd();
+    }
+    private void drawArc(GL2 gl,float  x, float y, float circleRad){
+        int numSides = 16;
+        for(int i = 0; i < numSides;  i++){
+            double theta = i*Math.PI/numSides;
+            gl.glVertex2d(x + Math.cos(theta)*circleRad, y-Math.sin(theta)*circleRad);
+        }
     }
     private void drawShapes(GL2 gl){
         collisionList = new ArrayList<Collision>();

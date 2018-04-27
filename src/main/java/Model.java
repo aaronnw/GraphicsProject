@@ -8,6 +8,7 @@ public class Model extends Observable{
     ArrayList<Shape> shapes;
     Shape target;
     Container container;
+    int lives;
 
     public Model(){
         shapes = new ArrayList();
@@ -31,6 +32,12 @@ public class Model extends Observable{
     }
     public Container getContainer(){
         return container;
+    }
+    public void setLives(int lives){
+        this.lives = lives;
+    }
+    public int getLives(){
+        return lives; 
     }
 
 
