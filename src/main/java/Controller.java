@@ -40,6 +40,7 @@ public class Controller {
         view.setPlayAreaTop(playAreaTop);
         frame.setBounds(0, 0, width, height);
         frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
         frame.getContentPane().add(canvas);
         frame.pack();
         frame.setVisible(true);

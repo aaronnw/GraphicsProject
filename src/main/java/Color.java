@@ -2,7 +2,7 @@
  * Created by Aaron on 3/9/2018.
  */
 public enum Color {
-    RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET, WHITE;
+    RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, WHITE;
 
     public float getR(){
         switch (this){
@@ -16,10 +16,8 @@ public enum Color {
                 return 0;
             case BLUE:
                 return 0;
-            case INDIGO:
-                return 75;
-            case VIOLET:
-                return 148;
+            case PURPLE:
+                return 100;
             default:
                 return 255;
         }
@@ -30,9 +28,7 @@ public enum Color {
                 return 0;
             case BLUE:
                 return 0;
-            case INDIGO:
-                return 0;
-            case VIOLET:
+            case PURPLE:
                 return 0;
             case ORANGE:
                 return 127;
@@ -56,10 +52,8 @@ public enum Color {
                 return 0;
             case BLUE:
                 return 255;
-            case INDIGO:
-                return 130;
-            case VIOLET:
-                return 211;
+            case PURPLE:
+                return 175;
             default:
                 return 255;
         }

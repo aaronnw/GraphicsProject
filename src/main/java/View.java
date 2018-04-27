@@ -167,8 +167,6 @@ public class View implements GLEventListener, MouseListener, Observer {
         while (iter.hasNext()) {
             Spark s = iter.next();
             s.update(gl);
-            gl.glLineWidth(1);
-            s.drawOutline(gl);
             s.move();
             if(s.isDead()){
                 iter.remove();
@@ -189,6 +187,13 @@ public class View implements GLEventListener, MouseListener, Observer {
 
     private void checkWallCollision(Shape s){
         Container container = model.getContainer();
+        //If the shape already escaped somehow send it straight to the center
+        if (!container.containsPoint(new Point2f(s.getX(), s.getY()))) {
+            Vector2d toCenter = new Vector2d(container.getCenter().getX() - s.getX(), container.getCenter().getY() - s.getY());
+            toCenter.normalize();
+            s.setDirection(toCenter);
+            return;
+        }
         for (Point2f p : s.getPoints()) {
             if (!container.containsPoint(p)) {
                 //Find the vector from the point to the center
