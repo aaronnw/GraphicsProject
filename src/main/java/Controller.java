@@ -130,8 +130,13 @@ public class Controller {
                     setTarget();
                     return;
                 }
+                else{
+                    s.setCracks();
+                }
             }
         }
+        Effects effects = new Effects();
+        model.addEffects(effects.createBubbles(p.getX(), p.getY()));
     }
     public double distanceBetween(Shape s1, Shape s2){
         return Math.sqrt(Math.pow(s1.getX()-s2.getX(), 2) + Math.pow(s1.getY() - s2.getY(), 2));
