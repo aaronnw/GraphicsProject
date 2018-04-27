@@ -157,11 +157,11 @@ public class View implements GLEventListener, MouseListener, Observer {
         Vector2d encroachingShapeMovement = encroachingShape.getMovement();
         Vector2d edgeShapeMovement = edgeShape.getMovement();
 
-//        Point2f predictedEdgeShapeLoc = new Point2f((float) (edgeShape.getX() + edgeShapeMovement.getX()), (float) (edgeShape.getY() + edgeShapeMovement.getY()));
-//        Point2f predictedEncroachingShapeLoc = new Point2f((float) (encroachingShape.getX() + encroachingShapeMovement.getX()), (float) (encroachingShape.getY() + encroachingShapeMovement.getY()));
-//        if(controller.distanceBetween(predictedEdgeShapeLoc, predictedEncroachingShapeLoc) > controller.distanceBetween(edgeShape, encroachingShape)){
-//            return;
-//        }
+        Point2f predictedEdgeShapeLoc = new Point2f((float) (edgeShape.getX() + edgeShapeMovement.getX()), (float) (edgeShape.getY() + edgeShapeMovement.getY()));
+        Point2f predictedEncroachingShapeLoc = new Point2f((float) (encroachingShape.getX() + encroachingShapeMovement.getX()), (float) (encroachingShape.getY() + encroachingShapeMovement.getY()));
+        if(controller.distanceBetween(predictedEdgeShapeLoc, predictedEncroachingShapeLoc) > controller.distanceBetween(edgeShape, encroachingShape)){
+            return;
+        }
         // Vector2d lineBetween = new Vector2d(edgeShape.getX() - encroachingShape.getX(), edgeShape.getY() - encroachingShape.getY());
         //        //boolean edgeMovingAway = edgeShapeMovement.angle(lineBetween) > Math.PI/2;
 //        //boolean encroachingShapeMovingAway = encroachingShapeMovement.angle(lineBetween) > Math.PI/2;
@@ -177,15 +177,14 @@ public class View implements GLEventListener, MouseListener, Observer {
         Vector2d newEncroachingShapeMovement = new Vector2d(encroachingShapeMovement.getX() - rightNormal.getX(), encroachingShapeMovement.getY() - rightNormal.getY());
         //Vector2d newEncroachingShapeMovement = new Vector2d(-encroachingShapeMovement.getX() , -encroachingShapeMovement.getY());
 
-//        //Get the normal vector to the edge
-//        rightNormal = new Vector2d(edge.getY(), -edge.getX());
-//        rightNormal.normalize();
-//        rightNormal.scale(edgeShapeMovement.dot(rightNormal) * 2);
-//        //Vector2d newEdgeShapeMovement = new Vector2d(edgeShapeMovement.getX() - rightNormal.getX(), edgeShapeMovement.getY() - rightNormal.getY());
-//        Vector2d newEdgeShapeMovement = new Vector2d(-edgeShapeMovement.getX(),-edgeShapeMovement.getY());
+        //Get the other vector to the edge
+        Vector2d leftNormal = new Vector2d(edge.getY(), edge.getX());
+        leftNormal.normalize();
+        leftNormal.scale(edgeShapeMovement.dot(leftNormal) * 2);
+        Vector2d newEdgeShapeMovement = new Vector2d(edgeShapeMovement.getX() - leftNormal.getX(), edgeShapeMovement.getY() - leftNormal.getY());
 
         encroachingShape.setMovement(newEncroachingShapeMovement);
-       // edgeShape.setMovement(newEdgeShapeMovement);
+        edgeShape.setMovement(newEdgeShapeMovement);
     }
 
     public int getWidth(){
