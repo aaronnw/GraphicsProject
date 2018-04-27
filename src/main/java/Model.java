@@ -7,6 +7,7 @@ import java.util.Observable;
 public class Model extends Observable{
     ArrayList<Shape> shapes;
     ArrayList<Shape> bubbles;
+    ArrayList<Spark> sparks;
     Shape target;
     private Shape beginButton;
     Container container;
@@ -14,11 +15,13 @@ public class Model extends Observable{
     int lives;
     private boolean gameStarted = false;
     private boolean newLevel = false;
+    private boolean gameOver = false;
     private int levelNum;
 
     public Model(){
         shapes =  new ArrayList<Shape>();
         bubbles = new ArrayList<Shape>();
+        sparks = new ArrayList<Spark>();
     }
     public void addShape(Shape s){
         shapes.add(s);
@@ -55,8 +58,22 @@ public class Model extends Observable{
     public void addBubble(Shape s){
         bubbles.add(s);
     }
+    public void addSpark(Spark s){
+        sparks.add(s);
+    }
+    public void removeLife(){
+        if(lives > 1){
+            lives = lives -1;
+        }else{
+            lives = 0;
+            gameOver = true;
+        }
+    }
     public ArrayList<Shape> getBubbles(){
         return  bubbles;
+    }
+    public ArrayList<Spark> getSparks(){
+        return  sparks;
     }
 
     public boolean isGameStarted() {
@@ -89,5 +106,9 @@ public class Model extends Observable{
 
     public void setBeginButton(Shape beginButton) {
         this.beginButton = beginButton;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 }

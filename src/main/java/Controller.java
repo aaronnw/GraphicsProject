@@ -164,6 +164,7 @@ public class Controller {
                         return;
                     } else {
                         shapeClicked = true;
+                        model.removeLife();
                     }
                 }
             }
