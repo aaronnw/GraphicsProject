@@ -8,6 +8,7 @@ public class Model extends Observable{
     ArrayList<Shape> shapes;
     ArrayList<Shape> bubbles;
     ArrayList<Spark> sparks;
+    ArrayList<Collision> collisionList;
     Shape target;
     private Shape beginButton;
     Container container;
@@ -22,6 +23,7 @@ public class Model extends Observable{
         shapes =  new ArrayList<Shape>();
         bubbles = new ArrayList<Shape>();
         sparks = new ArrayList<Spark>();
+        collisionList = new ArrayList<Collision>();
     }
     public void addShape(Shape s){
         shapes.add(s);
@@ -110,5 +112,13 @@ public class Model extends Observable{
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public ArrayList<Collision> getCollisionList() {
+        return collisionList;
+    }
+
+    public void setCollisionList(ArrayList<Collision> collisionList) {
+        this.collisionList = collisionList;
     }
 }

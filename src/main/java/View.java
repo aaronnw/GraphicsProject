@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import com.jogamp.opengl.util.awt.TextRenderer;
-import javax.swing.*;
 
 
 /**
@@ -25,12 +24,11 @@ public class View implements GLEventListener, MouseListener, Observer {
     private Controller controller;
     private Model model;
     private int playAreaTop;
-    private ArrayList<Collision> collisionList;
     private ArrayList<Collision> trimmedCollisions;
     private TextRenderer renderer;
 
-    public View(Model model){
-        this.model = model;
+    public View(Model m){
+        this.model = m;
     }
     public void setController(Controller c){
         controller = c;
@@ -116,17 +114,17 @@ public class View implements GLEventListener, MouseListener, Observer {
         }
     }
     private void drawShapes(GL2 gl){
-        collisionList = new ArrayList<Collision>();
+        model.setCollisionList(new ArrayList<Collision>());
         for (Shape s:model.getShapes()){
             s.update(gl);
         }
         for (Shape s: model.getShapes()) {
-            checkShapeCollision(s);
+            controller.checkShapeCollision(s);
         }
 
         trimmedCollisions = new ArrayList<Collision>();
         boolean add;
-        for (Collision c:collisionList){
+        for (Collision c:model.getCollisionList()){
             add = true;
             for(Collision other:trimmedCollisions){
                 if(c.equals(other)){
@@ -138,11 +136,11 @@ public class View implements GLEventListener, MouseListener, Observer {
             }
         }
         for(Collision c:trimmedCollisions){
-            handleCollision(c);
+            controller.handleCollision(c);
             createSpark(c.getS1(), c.getS2(), c.getP());
         }
         for (Shape s: model.getShapes()) {
-            checkWallCollision(s);
+            controller.checkWallCollision(s);
         }
         for (Shape s:model.getShapes()){
             s.move();
@@ -183,77 +181,6 @@ public class View implements GLEventListener, MouseListener, Observer {
         model.addSpark(spark1);
         model.addSpark(spark2);
      }
-
-
-    private void checkWallCollision(Shape s){
-        Container container = model.getContainer();
-        //If the shape already escaped somehow send it straight to the center
-        if (!container.containsPoint(new Point2f(s.getX(), s.getY()))) {
-            Vector2d toCenter = new Vector2d(container.getCenter().getX() - s.getX(), container.getCenter().getY() - s.getY());
-            toCenter.normalize();
-            s.setDirection(toCenter);
-            return;
-        }
-        for (Point2f p : s.getPoints()) {
-            if (!container.containsPoint(p)) {
-                //Find the vector from the point to the center
-                Vector2d toCenter = new Vector2d(container.getCenter().getX() - p.getX(), container.getCenter().getY() - p.getY());
-                //If the shape is already headed back to the center don't flip the direction
-                if (s.getDirection().angle(toCenter) < Math.PI / 2) {
-                    return;
-                }
-                //Find the edge the shape hit
-                Vector2d edge = container.violatingEdge(p);
-                //Get the normal vector to the edge
-                Vector2d normal = new Vector2d(edge.getY(), -edge.getX());
-                normal.normalize();
-                Vector2d v = new Vector2d(s.getDirection().getX(), s.getDirection().getY());
-                normal.scale(v.dot(normal) * 2);
-                //The actual reflection vector
-                Vector2d newMovement = new Vector2d(v.getX() - normal.getX(), v.getY() - normal.getY());
-                s.setDirection(newMovement);
-                s.addCrack();
-                return;
-            }
-        }
-    }
-    private void checkShapeCollision(Shape s){
-        for(Shape each:model.getShapes()){
-            if(!s.equals(each) && controller.distanceBetween(s, each) < s.getSize() + each.getSize()){
-                for(Point2f p:s.getPoints()) {
-                    if (each.containsPoint(p)) {
-                        //One of the points of shape s has crossed an edge of shape each
-                        Collision collision = new Collision(s, each, p);
-                        collisionList.add(collision);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-
-    private void handleCollision(Collision collision){
-        Shape encroachingShape  = collision.getS1();
-        Shape edgeShape = collision.getS2();
-
-        Vector2d encroachingShapeMovement = encroachingShape.getDirection();
-        Vector2d edgeShapeMovement = edgeShape.getDirection();
-        Vector2d lineBetween = new Vector2d(edgeShape.getX() - encroachingShape.getX(), edgeShape.getY() - encroachingShape.getY());
-        boolean edgeMovingAway = edgeShapeMovement.angle(lineBetween) > Math.PI/2;
-        boolean encroachingShapeMovingAway = encroachingShapeMovement.angle(lineBetween) > Math.PI/2;
-        if( edgeMovingAway && encroachingShapeMovingAway){
-            return;
-        }
-
-        lineBetween.normalize();
-        Vector2d newEdgeShapeMovement =lineBetween;
-        lineBetween = new Vector2d(-lineBetween.getX(), -lineBetween.getY());
-        Vector2d newEncroachingShapeMovement = lineBetween;
-
-        encroachingShape.setDirection(newEncroachingShapeMovement);
-        edgeShape.setDirection(newEdgeShapeMovement);
-    }
 
     public ArrayList<Point2d> generateLightning(double x1,double y1, double x2,double y2,int z){
         ArrayList<Point2d> lightning = new ArrayList<Point2d>();

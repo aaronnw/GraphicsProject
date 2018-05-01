@@ -176,6 +176,79 @@ public class Controller {
             }
         }
     }
+
+    public void handleCollision(Collision collision){
+        Shape encroachingShape  = collision.getS1();
+        Shape edgeShape = collision.getS2();
+
+        Vector2d encroachingShapeMovement = encroachingShape.getDirection();
+        Vector2d edgeShapeMovement = edgeShape.getDirection();
+        Vector2d lineBetween = new Vector2d(edgeShape.getX() - encroachingShape.getX(), edgeShape.getY() - encroachingShape.getY());
+        boolean edgeMovingAway = edgeShapeMovement.angle(lineBetween) > Math.PI/2;
+        boolean encroachingShapeMovingAway = encroachingShapeMovement.angle(lineBetween) > Math.PI/2;
+        if( edgeMovingAway && encroachingShapeMovingAway){
+            return;
+        }
+
+        lineBetween.normalize();
+        Vector2d newEdgeShapeMovement =lineBetween;
+        lineBetween = new Vector2d(-lineBetween.getX(), -lineBetween.getY());
+        Vector2d newEncroachingShapeMovement = lineBetween;
+
+        encroachingShape.setDirection(newEncroachingShapeMovement);
+        edgeShape.setDirection(newEdgeShapeMovement);
+    }
+
+
+    public void checkWallCollision(Shape s){
+        Container container = model.getContainer();
+        //If the shape already escaped somehow send it straight to the center
+        if (!container.containsPoint(new Point2f(s.getX(), s.getY()))) {
+            Vector2d toCenter = new Vector2d(container.getCenter().getX() - s.getX(), container.getCenter().getY() - s.getY());
+            toCenter.normalize();
+            s.setDirection(toCenter);
+            return;
+        }
+        for (Point2f p : s.getPoints()) {
+            if (!container.containsPoint(p)) {
+                //Find the vector from the point to the center
+                Vector2d toCenter = new Vector2d(container.getCenter().getX() - p.getX(), container.getCenter().getY() - p.getY());
+                //If the shape is already headed back to the center don't flip the direction
+                if (s.getDirection().angle(toCenter) < Math.PI / 2) {
+                    return;
+                }
+                //Find the edge the shape hit
+                Vector2d edge = container.violatingEdge(p);
+                //Get the normal vector to the edge
+                Vector2d normal = new Vector2d(edge.getY(), -edge.getX());
+                normal.normalize();
+                Vector2d v = new Vector2d(s.getDirection().getX(), s.getDirection().getY());
+                normal.scale(v.dot(normal) * 2);
+                //The actual reflection vector
+                Vector2d newMovement = new Vector2d(v.getX() - normal.getX(), v.getY() - normal.getY());
+                s.setDirection(newMovement);
+                s.addCrack();
+                return;
+            }
+        }
+    }
+
+
+    public void checkShapeCollision(Shape s){
+        for(Shape each:model.getShapes()){
+            if(!s.equals(each) && distanceBetween(s, each) < s.getSize() + each.getSize()){
+                for(Point2f p:s.getPoints()) {
+                    if (each.containsPoint(p)) {
+                        //One of the points of shape s has crossed an edge of shape each
+                        Collision collision = new Collision(s, each, p);
+                        model.getCollisionList().add(collision);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     public double distanceBetween(Shape s1, Shape s2){
         return Math.sqrt(Math.pow(s1.getX()-s2.getX(), 2) + Math.pow(s1.getY() - s2.getY(), 2));
     }
