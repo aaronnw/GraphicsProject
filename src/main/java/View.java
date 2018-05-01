@@ -239,6 +239,7 @@ public class View implements GLEventListener, MouseListener, Observer {
         }
         // draws every level
         else{
+            controller.removeExplodedShapes();
             drawTargetArea(gl);
             drawTarget(gl);
             drawLives(gl);

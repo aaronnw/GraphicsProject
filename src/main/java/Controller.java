@@ -158,7 +158,7 @@ public class Controller {
                     Color clickedColor = s.getColor();
                     System.out.println("Target color:" + targetColor);
                     System.out.println("color clicked: " + clickedColor);
-                    if (targetColor == clickedColor && target.getClass().equals(s.getClass())) {
+                    if (isMatch(s, target)) {
                         iter.remove();
                         addShapes(1);
                         setTarget();
@@ -227,7 +227,11 @@ public class Controller {
                 //The actual reflection vector
                 Vector2d newMovement = new Vector2d(v.getX() - normal.getX(), v.getY() - normal.getY());
                 s.setDirection(newMovement);
-                s.addCrack();
+                if(s.getCrackNum()+1 >= s.getPoints().size()){
+                    model.addExplodedShape(s);
+                }else {
+                    s.addCrack();
+                }
                 return;
             }
         }
@@ -249,6 +253,43 @@ public class Controller {
         }
     }
 
+    public boolean isOnlyMatch(Shape s){
+        Shape target = model.getTarget();
+        for(Shape others:model.getShapes()){
+            if(others.equals(s)) {
+                continue;
+            }
+            if(isMatch(others, target)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void removeExplodedShapes(){
+        ArrayList<Shape> explodedShapes = model.getExplodedShapes();
+        ArrayList<Shape> normalShapes = model.getShapes();
+        for(Shape s:explodedShapes){
+            if(isOnlyMatch(s)){
+                model.setLives(model.getLives()-1);
+                normalShapes.remove(s);
+                setTarget();
+            }else {
+                normalShapes.remove(s);
+            }
+        }
+        model.setExplodedShapes(new ArrayList<Shape>());
+        int difference = model.getCurrentLevel().getNumShapes() - model.getShapes().size();
+        if(difference == 0){
+            return;
+        }else{
+            addShapes(difference);
+        }
+    }
+
+    public boolean isMatch(Shape s1, Shape s2){
+        return s1.getColor() == s2.getColor() && s1.getClass().equals(s2.getClass());
+    }
     public double distanceBetween(Shape s1, Shape s2){
         return Math.sqrt(Math.pow(s1.getX()-s2.getX(), 2) + Math.pow(s1.getY() - s2.getY(), 2));
     }
