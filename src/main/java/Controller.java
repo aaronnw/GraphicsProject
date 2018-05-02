@@ -119,6 +119,12 @@ public class Controller {
         ArrayList<Shape> shapeList = model.getShapes();
         int index = rand.nextInt(shapeList.size());
         Shape target = shapeList.get(index).makeCopy();
+        //Reset the cracks for matches to avoid unfair deaths
+        for(Shape s:shapeList){
+            if(isMatch(target, s)){
+                s.resetCracks();
+            }
+        }
         target.setDirection(new Vector2d(0,0));
         target.size = defaultSize;
         model.setTarget(target);

@@ -171,6 +171,17 @@ public class View implements GLEventListener, MouseListener, Observer {
             }
         }
     }
+    private void drawExplosions(GL2 gl){
+        Iterator<Explosion> iter = model.getExplosions().iterator();
+        while (iter.hasNext()) {
+            Explosion exp = iter.next();
+            exp.update(gl);
+            exp.move();
+            if(exp.isFinished()){
+                iter.remove();
+            }
+        }
+    }
     private void createSpark(Shape s1, Shape s2, Point2f p){
         Vector2d lineBetween = new Vector2d(s2.getX() - s1.getX(), s2.getY() - s1.getY());
         lineBetween.normalize();
@@ -246,6 +257,7 @@ public class View implements GLEventListener, MouseListener, Observer {
             drawShapes(gl);
             drawBubbles(gl);
             drawSparks(gl);
+            drawExplosions(gl);
         }
 
     }

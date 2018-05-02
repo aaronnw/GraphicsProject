@@ -98,7 +98,7 @@ public abstract class Shape{
     }
 
     public void addCrack(){
-        if(unusuedPoints == null){
+        if(unusuedPoints == null || unusuedPoints.size() == 0){
             unusuedPoints = new ArrayList<Integer>();
             for(int i = 0 ; i < points.size(); i ++){
                 unusuedPoints.add(i);
@@ -279,6 +279,11 @@ public abstract class Shape{
     }
     public int getCrackNum(){
         return cracks.size();
+    }
+
+
+    public void resetCracks(){
+        cracks = new ArrayList<ArrayList<Vector2d>>();
     }
 
     public int getSideNum() {

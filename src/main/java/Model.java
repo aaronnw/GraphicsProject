@@ -8,6 +8,7 @@ public class Model extends Observable{
     ArrayList<Shape> shapes;
     ArrayList<Shape> bubbles;
     ArrayList<Spark> sparks;
+    ArrayList<Explosion> explosions;
     ArrayList<Collision> collisionList;
     ArrayList<Shape> explodedShapes;
     Shape target;
@@ -25,6 +26,7 @@ public class Model extends Observable{
         bubbles = new ArrayList<Shape>();
         explodedShapes = new ArrayList<Shape>();
         sparks = new ArrayList<Spark>();
+        explosions = new ArrayList<Explosion>();
         collisionList = new ArrayList<Collision>();
 
     }
@@ -131,8 +133,14 @@ public class Model extends Observable{
 
     public void addExplodedShape(Shape s){
         explodedShapes.add(s);
+        Explosion exp = new Explosion(s);
+        explosions.add(exp);
     }
     public void setExplodedShapes(ArrayList<Shape> explodedShapes) {
         this.explodedShapes = explodedShapes;
+    }
+
+    public ArrayList<Explosion> getExplosions() {
+        return explosions;
     }
 }
