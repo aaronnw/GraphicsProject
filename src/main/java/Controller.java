@@ -308,6 +308,19 @@ public class Controller {
             addShapes(difference);
         }
     }
+    //Creates a spark object when two shapes collide at a point
+    void createSpark(Shape s1, Shape s2, Point2f p){
+        //Create two sparks
+        //One going each way normal to the line between the two shapes, starting from the intersection
+        Vector2d lineBetween = new Vector2d(s2.getX() - s1.getX(), s2.getY() - s1.getY());
+        lineBetween.normalize();
+        Vector2d leftNormal = new Vector2d(-lineBetween.getX(), lineBetween.getY());
+        Spark spark1 = new Spark(p.getX(), p.getY(), leftNormal);
+        Vector2d rightNormal = new Vector2d(lineBetween.getX(), -lineBetween.getY());
+        Spark spark2 = new Spark(p.getX(), p.getY(), rightNormal);
+        model.addSpark(spark1);
+        model.addSpark(spark2);
+    }
 
     //Check if two shapes match (have the same type and color)
     private boolean isMatch(Shape s1, Shape s2){
