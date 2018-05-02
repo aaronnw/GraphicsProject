@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 import com.jogamp.opengl.util.awt.TextRenderer;
-import javax.swing.*;
 
 
 /**
@@ -21,22 +20,16 @@ import javax.swing.*;
 public class View implements GLEventListener, MouseListener, Observer {
     private int	w;
     private int	h;
-    private int counter = 0;
     private Controller controller;
     private Model model;
     private int playAreaTop;
-    private ArrayList<Collision> collisionList;
-    private ArrayList<Collision> trimmedCollisions;
     private TextRenderer renderer;
 
-    public View(Model model){
-        this.model = model;
+    View(Model m){
+        this.model = m;
     }
-    public void setController(Controller c){
+    void setController(Controller c){
         controller = c;
-    }
-    public void setModel(Model m){
-        model = m;
     }
 
     public void init(GLAutoDrawable drawable) {
@@ -49,7 +42,6 @@ public class View implements GLEventListener, MouseListener, Observer {
     }
 
     public void display(GLAutoDrawable drawable) {
-        update();
         render(drawable);
     }
 
@@ -57,9 +49,6 @@ public class View implements GLEventListener, MouseListener, Observer {
         this.w = w;
         this.h = h;
 
-    }
-    public void update(){
-        counter ++;
     }
 
     private  void render(GLAutoDrawable drawable){
@@ -70,7 +59,6 @@ public class View implements GLEventListener, MouseListener, Observer {
     }
     private void	setPixelProjection(GL2 gl, GLAutoDrawable drawable)
     {
-        GLU glu = new GLU();
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
         gl.glOrtho(0, drawable.getSurfaceWidth(), drawable.getSurfaceHeight(),0, 0,1);
@@ -116,19 +104,19 @@ public class View implements GLEventListener, MouseListener, Observer {
         }
     }
     private void drawShapes(GL2 gl){
-        collisionList = new ArrayList<Collision>();
+        model.setCollisionList(new ArrayList<Collision>());
         for (Shape s:model.getShapes()){
             s.update(gl);
         }
         for (Shape s: model.getShapes()) {
-            checkShapeCollision(s);
+            controller.checkShapeCollision(s);
         }
 
-        trimmedCollisions = new ArrayList<Collision>();
+        ArrayList<Collision> trimmedCollisions = new ArrayList<Collision>();
         boolean add;
-        for (Collision c:collisionList){
+        for (Collision c:model.getCollisionList()){
             add = true;
-            for(Collision other:trimmedCollisions){
+            for(Collision other: trimmedCollisions){
                 if(c.equals(other)){
                     add = false;
                 }
@@ -137,12 +125,12 @@ public class View implements GLEventListener, MouseListener, Observer {
                 trimmedCollisions.add(c);
             }
         }
-        for(Collision c:trimmedCollisions){
-            handleCollision(c);
-            createSpark(c.getS1(), c.getS2(), c.getP());
+        for(Collision c: trimmedCollisions){
+            controller.handleCollision(c);
+            controller.createSpark(c.getS1(), c.getS2(), c.getP());
         }
         for (Shape s: model.getShapes()) {
-            checkWallCollision(s);
+            controller.checkWallCollision(s);
         }
         for (Shape s:model.getShapes()){
             s.move();
@@ -173,89 +161,20 @@ public class View implements GLEventListener, MouseListener, Observer {
             }
         }
     }
-    private void createSpark(Shape s1, Shape s2, Point2f p){
-        Vector2d lineBetween = new Vector2d(s2.getX() - s1.getX(), s2.getY() - s1.getY());
-        lineBetween.normalize();
-        Vector2d leftNormal = new Vector2d(-lineBetween.getX(), lineBetween.getY());
-        Spark spark1 = new Spark(p.getX(), p.getY(), leftNormal);
-        Vector2d rightNormal = new Vector2d(lineBetween.getX(), -lineBetween.getY());
-        Spark spark2 = new Spark(p.getX(), p.getY(), rightNormal);
-        model.addSpark(spark1);
-        model.addSpark(spark2);
-     }
-
-
-    private void checkWallCollision(Shape s){
-        Container container = model.getContainer();
-        //If the shape already escaped somehow send it straight to the center
-        if (!container.containsPoint(new Point2f(s.getX(), s.getY()))) {
-            Vector2d toCenter = new Vector2d(container.getCenter().getX() - s.getX(), container.getCenter().getY() - s.getY());
-            toCenter.normalize();
-            s.setDirection(toCenter);
-            return;
-        }
-        for (Point2f p : s.getPoints()) {
-            if (!container.containsPoint(p)) {
-                //Find the vector from the point to the center
-                Vector2d toCenter = new Vector2d(container.getCenter().getX() - p.getX(), container.getCenter().getY() - p.getY());
-                //If the shape is already headed back to the center don't flip the direction
-                if (s.getDirection().angle(toCenter) < Math.PI / 2) {
-                    return;
-                }
-                //Find the edge the shape hit
-                Vector2d edge = container.violatingEdge(p);
-                //Get the normal vector to the edge
-                Vector2d normal = new Vector2d(edge.getY(), -edge.getX());
-                normal.normalize();
-                Vector2d v = new Vector2d(s.getDirection().getX(), s.getDirection().getY());
-                normal.scale(v.dot(normal) * 2);
-                //The actual reflection vector
-                Vector2d newMovement = new Vector2d(v.getX() - normal.getX(), v.getY() - normal.getY());
-                s.setDirection(newMovement);
-                s.addCrack();
-                return;
-            }
-        }
-    }
-    private void checkShapeCollision(Shape s){
-        for(Shape each:model.getShapes()){
-            if(!s.equals(each) && controller.distanceBetween(s, each) < s.getSize() + each.getSize()){
-                for(Point2f p:s.getPoints()) {
-                    if (each.containsPoint(p)) {
-                        //One of the points of shape s has crossed an edge of shape each
-                        Collision collision = new Collision(s, each, p);
-                        collisionList.add(collision);
-                        break;
-                    }
-                }
+    private void drawExplosions(GL2 gl){
+        Iterator<Explosion> iter = model.getExplosions().iterator();
+        while (iter.hasNext()) {
+            Explosion exp = iter.next();
+            exp.update(gl);
+            exp.move();
+            if(exp.isFinished()){
+                iter.remove();
             }
         }
     }
 
 
-    private void handleCollision(Collision collision){
-        Shape encroachingShape  = collision.getS1();
-        Shape edgeShape = collision.getS2();
-
-        Vector2d encroachingShapeMovement = encroachingShape.getDirection();
-        Vector2d edgeShapeMovement = edgeShape.getDirection();
-        Vector2d lineBetween = new Vector2d(edgeShape.getX() - encroachingShape.getX(), edgeShape.getY() - encroachingShape.getY());
-        boolean edgeMovingAway = edgeShapeMovement.angle(lineBetween) > Math.PI/2;
-        boolean encroachingShapeMovingAway = encroachingShapeMovement.angle(lineBetween) > Math.PI/2;
-        if( edgeMovingAway && encroachingShapeMovingAway){
-            return;
-        }
-
-        lineBetween.normalize();
-        Vector2d newEdgeShapeMovement =lineBetween;
-        lineBetween = new Vector2d(-lineBetween.getX(), -lineBetween.getY());
-        Vector2d newEncroachingShapeMovement = lineBetween;
-
-        encroachingShape.setDirection(newEncroachingShapeMovement);
-        edgeShape.setDirection(newEdgeShapeMovement);
-    }
-
-    public ArrayList<Point2d> generateLightning(double x1,double y1, double x2,double y2,int z){
+    private ArrayList<Point2d> generateLightning(double x1,double y1, double x2,double y2,int z){
         ArrayList<Point2d> lightning = new ArrayList<Point2d>();
         if (z < 3) {
             lightning.add(new Point2d(x1,y1));
@@ -275,7 +194,7 @@ public class View implements GLEventListener, MouseListener, Observer {
     /**
         Created by Taylor Humphrey
      */
-    public void processLevel(GL2 gl, GLAutoDrawable drawable){
+    private void processLevel(GL2 gl, GLAutoDrawable drawable){
         // view that shows when the game begins
         if(!model.isGameStarted()){
             renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 38));
@@ -312,29 +231,31 @@ public class View implements GLEventListener, MouseListener, Observer {
         }
         // draws every level
         else{
+            controller.removeExplodedShapes();
             drawTargetArea(gl);
             drawTarget(gl);
             drawLives(gl);
             drawShapes(gl);
             drawBubbles(gl);
             drawSparks(gl);
+            drawExplosions(gl);
         }
 
     }
 
-    public int getWidth(){
+    int getWidth(){
         return w;
     }
-    public int getHeight(){
+    int getHeight(){
         return h;
     }
-    public void setWidth(int w){
+    void setWidth(int w){
         this.w = w;
     }
-    public void setHeight(int h){
+    void setHeight(int h){
         this.h = h;
     }
-    public void setPlayAreaTop(int top){
+    void setPlayAreaTop(int top){
         playAreaTop = top;
     }
 

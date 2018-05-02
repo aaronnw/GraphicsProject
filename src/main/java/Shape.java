@@ -21,6 +21,7 @@ public abstract class Shape{
     Vector2d direction;
     ArrayList<Vector2d> vectors;
     ArrayList<Point2f> points;
+    ArrayList<Integer> unusuedPoints;
     double offsetVal = 0;
     ArrayList<Vector2d> crackVectors = new ArrayList<Vector2d>();
     ArrayList<ArrayList<Vector2d>> cracks = new  ArrayList<ArrayList<Vector2d>>();
@@ -97,11 +98,19 @@ public abstract class Shape{
     }
 
     public void addCrack(){
+        if(unusuedPoints == null || unusuedPoints.size() == 0){
+            unusuedPoints = new ArrayList<Integer>();
+            for(int i = 0 ; i < points.size(); i ++){
+                unusuedPoints.add(i);
+            }
+        }
         //crackVectors = new ArrayList<Vector2d>();
-        int start = rand.nextInt(points.size());
+        int index = rand.nextInt(unusuedPoints.size());
+        int start = unusuedPoints.get(index);
         Point2f startPoint = points.get(start);
         ArrayList<Vector2d> crack = createCrack(x, y, startPoint.getX(), startPoint.getY(),4);
         cracks.add(crack);
+        unusuedPoints.remove(index);
     }
 
     public void drawCracks(GL2 gl) {
@@ -267,5 +276,17 @@ public abstract class Shape{
 //            createCrack(x2,y2,mid_x,mid_y, z/2);
 //            createCrack(mid_x,mid_y,x1,y1,z/2);
 //        }
+    }
+    public int getCrackNum(){
+        return cracks.size();
+    }
+
+
+    public void resetCracks(){
+        cracks = new ArrayList<ArrayList<Vector2d>>();
+    }
+
+    public int getSideNum() {
+        return sideNum;
     }
 }

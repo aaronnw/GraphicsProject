@@ -8,6 +8,9 @@ public class Model extends Observable{
     ArrayList<Shape> shapes;
     ArrayList<Shape> bubbles;
     ArrayList<Spark> sparks;
+    ArrayList<Explosion> explosions;
+    ArrayList<Collision> collisionList;
+    ArrayList<Shape> explodedShapes;
     Shape target;
     private Shape beginButton;
     Container container;
@@ -21,7 +24,11 @@ public class Model extends Observable{
     public Model(){
         shapes =  new ArrayList<Shape>();
         bubbles = new ArrayList<Shape>();
+        explodedShapes = new ArrayList<Shape>();
         sparks = new ArrayList<Spark>();
+        explosions = new ArrayList<Explosion>();
+        collisionList = new ArrayList<Collision>();
+
     }
     public void addShape(Shape s){
         shapes.add(s);
@@ -110,5 +117,30 @@ public class Model extends Observable{
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public ArrayList<Collision> getCollisionList() {
+        return collisionList;
+    }
+
+    public void setCollisionList(ArrayList<Collision> collisionList) {
+        this.collisionList = collisionList;
+    }
+
+    public ArrayList<Shape> getExplodedShapes() {
+        return explodedShapes;
+    }
+
+    public void addExplodedShape(Shape s){
+        explodedShapes.add(s);
+        Explosion exp = new Explosion(s);
+        explosions.add(exp);
+    }
+    public void setExplodedShapes(ArrayList<Shape> explodedShapes) {
+        this.explodedShapes = explodedShapes;
+    }
+
+    public ArrayList<Explosion> getExplosions() {
+        return explosions;
     }
 }

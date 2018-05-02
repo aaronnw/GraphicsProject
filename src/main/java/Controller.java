@@ -2,7 +2,6 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
-
 import javax.swing.*;
 import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
@@ -14,26 +13,28 @@ import java.util.Iterator;
 import java.util.Random;
 
 /**
- * Created by Aaron on 3/9/2018.
+ * The controller for MVC
+ * Handles the logic of the program, collisions, model changes, etc.
  */
 public class Controller {
-    Model model;
-    View view;
-    int playAreaTop = 150;
-    int defaultSize = 100;
-    Random rand = new Random();
+    private Model model;
+    private View view;
+    private int playAreaTop = 150;
+    private int defaultSize = 100;
+    private Random rand = new Random();
 
-    public Controller(Model m, View v){
+    Controller(Model m, View v){
         model = m;
         view = v;
     }
     //Start the project
-    public void init(int width, int height){
+    void init(int width, int height){
+        //Set up the OpenGL default settings
         GLProfile profile = GLProfile.getDefault();
         GLCapabilities capabilities = new GLCapabilities(profile);
         GLCanvas canvas = new GLCanvas(capabilities);
+        //Create the frame and set the sizes
         JFrame frame = new JFrame("Shape Game");
-
         canvas.setPreferredSize(new Dimension(width, height));
         view.setWidth(width);
         view.setHeight(height);
@@ -45,42 +46,48 @@ public class Controller {
         frame.pack();
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
             }
         });
+        //Add listeners to the canvas
         canvas.addGLEventListener(view);
         canvas.addMouseListener(view);
-
+        //Create a level to start
         Level current = new Level(3, 10, 10, 150, 100, 100, 50);
         model.setCurrentLevel(current);
         model.setLives(current.getLives());
+        //Add the shapes to the play area
         addShapes(current.getNumShapes());
+        //Set the target to match
         setTarget();
+        //Set the square container that holds the game, for edge collision
         setContainer();
 
+        //Animate at 60 fps
         FPSAnimator animator = new FPSAnimator(canvas, 60);
         animator.start();
     }
 
-    public void addShapes(int numShapes){
+    //Add a given number of shapes to the play area
+    private void addShapes(int numShapes){
+        //Get the shape parameters from the current level
         Level current = model.getCurrentLevel();
         int minShapeSize = current.getMinShapeSize();
         int maxShapeSize = current.getMaxShapeSize();
         int minVel = current.getMinVel();
         int maxVel = current.getMaxVel();
-
-        Random rand = new Random();
+        //Get the list of all the possible colors
         Color[] colors = Color.values();
+        //Add each shape
         for (int i = 0; i < numShapes ; i++) {
             int size = minShapeSize + rand.nextInt(maxShapeSize-minShapeSize);
             int x = rand.nextInt(view.getWidth()-size) + size/2;
             int y = playAreaTop + rand.nextInt(view.getHeight()-size-playAreaTop) + size/2;
             int colorVal = rand.nextInt(colors.length);
             Shape shape;
-            //int shapeType = 1;
+            //Pick a random type of shape to create
             int shapeType = rand.nextInt(4);
             switch (shapeType){
                 case 0:
@@ -103,37 +110,47 @@ public class Controller {
                     shape = new Circle(x, y, size);
                     break;
             }
-
+            //Set the color and velocity within the level parameters
             shape.setColor(colors[colorVal]);
             shape.setSpeed(rand.nextInt(maxVel-minVel)+minVel);
-
             double movementX = rand.nextDouble();
             double movementY = 1-movementX;
             Vector2d movement = new Vector2d(movementX, movementY);
             shape.setDirection(movement);
-
+            //Add the shape to the model
             model.addShape(shape);
         }
     }
-    public void setTarget(){
+    //Set the target the player should match
+    private void setTarget(){
         ArrayList<Shape> shapeList = model.getShapes();
+        //Copy a random shape
         int index = rand.nextInt(shapeList.size());
         Shape target = shapeList.get(index).makeCopy();
+        //Reset the cracks for matches to avoid unfair deaths
+        for(Shape s:shapeList){
+            if(isMatch(target, s)){
+                s.resetCracks();
+            }
+        }
+        //Set the copied target settings
         target.setDirection(new Vector2d(0,0));
         target.size = defaultSize;
         model.setTarget(target);
     }
-    public void setContainer(){
+    //Set the container for the game to take place in
+    private void setContainer(){
+        //Define a container solely by the points around its edge
         ArrayList<Point2f> containerPoints = new ArrayList<Point2f>();
         containerPoints.add(new Point2f(0,playAreaTop));
         containerPoints.add(new Point2f(view.getWidth(),playAreaTop));
         containerPoints.add(new Point2f(view.getWidth(),view.getHeight()));
-        containerPoints.add(new Point2f(0,view.getHeight()
-        ));
+        containerPoints.add(new Point2f(0,view.getHeight()));
         Container container = new Container(containerPoints);
         model.setContainer(container);
     }
-    public void processClick(Point2f p){
+    //Process any click by the user
+    void processClick(Point2f p){
         // will be accessed only when the game starts
         if(!model.isGameStarted()){
             // if user pressed within the beginButton area
@@ -147,28 +164,28 @@ public class Controller {
 
         }
         else {
-            Iterator<Shape> iter = model.getShapes().iterator();
             Shape target = model.getTarget();
-            Color targetColor = target.getColor();
             boolean shapeClicked = false;
+            //Iterate over all the shapes
+            Iterator<Shape> iter = model.getShapes().iterator();
             while (iter.hasNext()) {
                 Shape s = iter.next();
                 //If this is the shape we clicked
                 if (s.containsPoint(p)) {
-                    Color clickedColor = s.getColor();
-                    System.out.println("Target color:" + targetColor);
-                    System.out.println("color clicked: " + clickedColor);
-                    if (targetColor == clickedColor && target.getClass().equals(s.getClass())) {
+                    //If it matches, remove it, add a new shape, and set a new target
+                    if (isMatch(s, target)) {
                         iter.remove();
                         addShapes(1);
                         setTarget();
                         return;
                     } else {
+                        //If it's the wrong shape, remove a life
                         shapeClicked = true;
                         model.removeLife();
                     }
                 }
             }
+            //If we missed all the shapes, add a bubble effect
             if (!shapeClicked) {
                 Bubble bubble = new Bubble(p.getX(), p.getY(), 70, new Vector2d(0, -1), 20, Color.WHITE);
                 bubble.setAlpha(.5f);
@@ -176,9 +193,144 @@ public class Controller {
             }
         }
     }
-    public double distanceBetween(Shape s1, Shape s2){
+    //Handle a collision object between two shapes
+    void handleCollision(Collision collision){
+        Shape encroachingShape  = collision.getS1();
+        Shape edgeShape = collision.getS2();
+
+        Vector2d encroachingShapeMovement = encroachingShape.getDirection();
+        Vector2d edgeShapeMovement = edgeShape.getDirection();
+        //Draw the line between the two shapes
+        Vector2d lineBetween = new Vector2d(edgeShape.getX() - encroachingShape.getX(), edgeShape.getY() - encroachingShape.getY());
+        //If they're already moving away, let them so we don't get stuck
+        boolean edgeMovingAway = edgeShapeMovement.angle(lineBetween) > Math.PI/2;
+        boolean encroachingShapeMovingAway = encroachingShapeMovement.angle(lineBetween) > Math.PI/2;
+        if( edgeMovingAway && encroachingShapeMovingAway){
+            return;
+        }
+        //Bounce the shapes off each other along the line between them
+        lineBetween.normalize();
+        Vector2d newEdgeShapeMovement =lineBetween;
+        lineBetween = new Vector2d(-lineBetween.getX(), -lineBetween.getY());
+        Vector2d newEncroachingShapeMovement = lineBetween;
+
+        encroachingShape.setDirection(newEncroachingShapeMovement);
+        edgeShape.setDirection(newEdgeShapeMovement);
+    }
+
+    //Handle a collision between a shape and the container
+    void checkWallCollision(Shape s){
+        Container container = model.getContainer();
+        //If the shape already escaped somehow send it straight to the center
+        if (!container.containsPoint(new Point2f(s.getX(), s.getY()))) {
+            Vector2d toCenter = new Vector2d(container.getCenter().getX() - s.getX(), container.getCenter().getY() - s.getY());
+            toCenter.normalize();
+            s.setDirection(toCenter);
+            return;
+        }
+        for (Point2f p : s.getPoints()) {
+            if (!container.containsPoint(p)) {
+                //Find the vector from the point to the center
+                Vector2d toCenter = new Vector2d(container.getCenter().getX() - p.getX(), container.getCenter().getY() - p.getY());
+                //If the shape is already headed back to the center don't flip the direction
+                if (s.getDirection().angle(toCenter) < Math.PI / 2) {
+                    return;
+                }
+                //Find the edge the shape hit
+                Vector2d edge = container.violatingEdge(p);
+                //Get the normal vector to the edge
+                Vector2d normal = new Vector2d(edge.getY(), -edge.getX());
+                normal.normalize();
+                Vector2d v = new Vector2d(s.getDirection().getX(), s.getDirection().getY());
+                normal.scale(v.dot(normal) * 2);
+                //The actual reflection vector
+                Vector2d newMovement = new Vector2d(v.getX() - normal.getX(), v.getY() - normal.getY());
+                s.setDirection(newMovement);
+                //Add the shape to be exploded if it has too many cracks
+                if(s.getCrackNum()+1 >= s.getPoints().size()){
+                    model.addExplodedShape(s);
+                }else {
+                    //Add another crack
+                    s.addCrack();
+                }
+                return;
+            }
+        }
+    }
+    //Check if a shape s has collided with any  other shapes
+    void checkShapeCollision(Shape s){
+        for(Shape each:model.getShapes()){
+            if(!s.equals(each) && distanceBetween(s, each) < s.getSize() + each.getSize()){
+                for(Point2f p:s.getPoints()) {
+                    if (each.containsPoint(p)) {
+                        //One of the points of shape s has crossed an edge of shape each
+                        Collision collision = new Collision(s, each, p);
+                        model.getCollisionList().add(collision);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    //Check if the shape is the only one to match the target
+    private boolean isOnlyMatch(Shape s){
+        Shape target = model.getTarget();
+        for(Shape others:model.getShapes()){
+            if(others.equals(s)) {
+                continue;
+            }
+            if(isMatch(others, target)){
+                return false;
+            }
+        }
+        return true;
+    }
+    //Remove exploded shapes from the normal shape play list
+    void removeExplodedShapes(){
+        ArrayList<Shape> explodedShapes = model.getExplodedShapes();
+        ArrayList<Shape> normalShapes = model.getShapes();
+        for(Shape s:explodedShapes){
+            //If it's the only one we need to set a new target, and the player loses a life
+            if(isOnlyMatch(s)){
+                model.setLives(model.getLives()-1);
+                normalShapes.remove(s);
+                setTarget();
+            }else {
+                //Just remove it otherwise
+                normalShapes.remove(s);
+            }
+        }
+        //Wipe the exploded shape list when we're done
+        model.setExplodedShapes(new ArrayList<Shape>());
+        //Add as many new shapes as we need to keep at the level-determined amount
+        int difference = model.getCurrentLevel().getNumShapes() - model.getShapes().size();
+        if(difference != 0){
+            addShapes(difference);
+        }
+    }
+    //Creates a spark object when two shapes collide at a point
+    void createSpark(Shape s1, Shape s2, Point2f p){
+        //Create two sparks
+        //One going each way normal to the line between the two shapes, starting from the intersection
+        Vector2d lineBetween = new Vector2d(s2.getX() - s1.getX(), s2.getY() - s1.getY());
+        lineBetween.normalize();
+        Vector2d leftNormal = new Vector2d(-lineBetween.getX(), lineBetween.getY());
+        Spark spark1 = new Spark(p.getX(), p.getY(), leftNormal);
+        Vector2d rightNormal = new Vector2d(lineBetween.getX(), -lineBetween.getY());
+        Spark spark2 = new Spark(p.getX(), p.getY(), rightNormal);
+        model.addSpark(spark1);
+        model.addSpark(spark2);
+    }
+
+    //Check if two shapes match (have the same type and color)
+    private boolean isMatch(Shape s1, Shape s2){
+        return s1.getColor() == s2.getColor() && s1.getClass().equals(s2.getClass());
+    }
+    //Calculate the distance between two shapes
+    private double distanceBetween(Shape s1, Shape s2){
         return Math.sqrt(Math.pow(s1.getX()-s2.getX(), 2) + Math.pow(s1.getY() - s2.getY(), 2));
     }
+    //Calculate the distance between two points
     public double distanceBetween(Point2f p1, Point2f p2){
         return Math.sqrt(Math.pow(p1.getX()-p2.getX(), 2) + Math.pow(p1.getY() - p2.getY(), 2));
     }
