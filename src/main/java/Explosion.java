@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Explosion extends Shape {
 
     float count = 0;
-    float duration = 10;
+    float duration = 12;
 
     public Explosion(Shape s){
         this.x = s.getX();
