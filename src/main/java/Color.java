@@ -1,9 +1,12 @@
 /**
- * Created by Aaron on 3/9/2018.
+ * Enumerator to store our predefined color values
  */
 public enum Color {
     RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, WHITE;
 
+    /**
+     * Each get method returns the value associated with the enum's color
+     */
     public float getR(){
         switch (this){
             case RED:

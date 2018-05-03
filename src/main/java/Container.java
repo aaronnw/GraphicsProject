@@ -7,22 +7,29 @@ import java.util.TreeMap;
 
 
 /**
- * Created by Aaron on 3/9/2018.
+ * Sets up the container for our shapes to bounce in
+ * Could be configured to a different set of points
  */
 public class Container {
-    Color color;
-    ArrayList<Vector2d> vectors;
-    ArrayList<Point2f> points;
-    Point2f center;
-    double offsetVal = 0;
+    private Color color;
+    private ArrayList<Vector2d> vectors;
+    private ArrayList<Point2f> points;
+    private Point2f center;
+    private double offsetVal = 0;
 
-    public Container(ArrayList<Point2f> points){
+    /**
+     * To make a container just give it a set of points
+     * @param points
+     */
+    Container(ArrayList<Point2f> points){
         this.color = Color.WHITE;
+        //The points are first sorted counter-clockwise then the shape is made
         this.points = sortPoints(points);
         populateVectors();
         calculateCenter();
     }
-    public ArrayList<Point2f> sortPoints(ArrayList<Point2f> pointList){
+    //Sort the points counter-clockwise based on their angle to the vector (1,0)
+    private ArrayList<Point2f> sortPoints(ArrayList<Point2f> pointList){
         if(pointList.size() < 2){
             return pointList;
         }
@@ -44,7 +51,8 @@ public class Container {
         }
         return new ArrayList<Point2f>(rankedPoints.values());
     }
-    public void populateVectors(){
+    //Make vectors for the edges
+    private void populateVectors(){
         vectors = new ArrayList<Vector2d>();
         //Progress around
         for(int i = 0; i < points.size()-1; i++){
@@ -53,7 +61,7 @@ public class Container {
         }
         vectors.add(new Vector2d(points.get(0).getX() - points.get(points.size()-1).getX(),points.get(0).getY() - points.get(points.size()-1).getY()));
     }
-
+    //If we wanted to draw the container, do it like any other point-defined shape
     public void draw(GL2 gl){
         gl.glColor4f(color.getR() / 255, color.getG() / 255, color.getB() / 255, color.getA());
         gl.glBegin(GL2.GL_LINE_STRIP);
@@ -63,8 +71,8 @@ public class Container {
         gl.glVertex2f(points.get(0).getX(), points.get(0).getY());
         gl.glEnd();
     }
-
-    public boolean containsPoint(Point2f p){
+    //The important part -- does this container contain a given point
+    boolean containsPoint(Point2f p){
         float beginX = points.get(0).getX();
         float beginY = points.get(0).getY();
         float endX;
@@ -80,7 +88,8 @@ public class Container {
         }
         return true;
     }
-    public Vector2d violatingEdge(Point2f p){
+    //Find out which edge of the container has been violated
+    Vector2d violatingEdge(Point2f p){
         float beginX = points.get(0).getX();
         float beginY = points.get(0).getY();
         float endX;
@@ -102,7 +111,8 @@ public class Container {
     public void setColor(Color color) {
         this.color = color;
     }
-    public void calculateCenter(){
+    //Figure out the center, determined by the average of the point values
+    private  void calculateCenter(){
         float sumX = 0;
         float sumY = 0;
         for(Point2f p:points){
@@ -111,7 +121,7 @@ public class Container {
         }
        center = new Point2f(sumX/points.size(), sumY/points.size());
     }
-    public Point2f getCenter(){
+    Point2f getCenter(){
         return center;
     }
     public Color getColor(){

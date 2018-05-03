@@ -1,5 +1,6 @@
 /**
- * Created by Aaron on 3/9/2018.
+ * Contains the main method
+ * Sets up the MVC structure and calls the init in controller
  */
 public class Driver {
     //Set up the MVC structure and start the controller
@@ -9,7 +10,6 @@ public class Driver {
         int height = 1100;
         Model m = new Model();
         View v = new View(m);
-        m.addObserver(v);
         Controller c = new Controller(m, v);
         v.setController(c);
         c.init(width, height);

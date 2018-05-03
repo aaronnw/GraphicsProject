@@ -3,14 +3,19 @@ import com.jogamp.opengl.GL2;
 import javax.vecmath.Point2f;
 import javax.vecmath.Vector2d;
 
+/**
+ * This class creates a spark object, which is based on a triangle
+ */
 public class Spark extends Triangle {
-    int count = 0;
-    int duration = 8;
+    private int count = 0;
+    private int duration = 8;
 
-    public Spark(float x, float y, Vector2d direction){
+    Spark(float x, float y, Vector2d direction){
+        //First initialize a triangle
         super(x, y, 10, direction, 120, Color.YELLOW);
         super.setRotationAmount(rand.nextDouble()*Math.PI);
     }
+    //Do a special drawing for this effect, which lets the spark fade out and disappear
     @Override
     public void draw(GL2 gl){
         gl.glEnable(gl.GL_BLEND);
@@ -24,7 +29,7 @@ public class Spark extends Triangle {
         gl.glEnd();
         count++;
     }
-
+    //Check for whether we should remove the spark
     public boolean isDead(){
         if(count > duration){
             return  true;

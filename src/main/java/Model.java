@@ -2,9 +2,10 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 /**
- * Created by Aaron on 3/9/2018.
+ * The model class for our MVC implementation
+ * This class handles the data of our
  */
-public class Model extends Observable{
+public class Model{
     ArrayList<Shape> shapes;
     ArrayList<Shape> bubbles;
     ArrayList<Spark> sparks;
@@ -32,6 +33,11 @@ public class Model extends Observable{
         collisionList = new ArrayList<Collision>();
 
     }
+
+    /**
+     * All of these methods simply change or retrieve the data stored in the model
+     */
+
     public void addShape(Shape s){
         shapes.add(s);
     }
@@ -40,8 +46,6 @@ public class Model extends Observable{
     }
     public void setTarget(Shape s){
         target = s;
-        setChanged();
-        notifyObservers("TARGET_CHANGED");
     }
     public Shape getTarget(){
         return target;

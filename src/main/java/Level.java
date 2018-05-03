@@ -1,3 +1,6 @@
+/**
+ * Simple data class to hold level information
+ */
 public class Level {
     private int lives;
     private int targetNumber;
@@ -17,6 +20,10 @@ public class Level {
         this.minVel = minVel;
     }
 
+    /**
+     * All the methods here just edit or retrieve the constants set for the level
+     * @return
+     */
     public int getLives() {
         return lives;
     }

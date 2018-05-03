@@ -1,24 +1,28 @@
 import javax.vecmath.Point2f;
 
+/**
+ * Collision simply stores two shapes and an intersection
+ */
 public class Collision {
-    Shape s1;
-    Shape s2;
-    Point2f intersection;
+    private Shape s1;
+    private Shape s2;
+    private Point2f intersection;
 
-    public Collision(Shape s1, Shape s2, Point2f intersection){
+    Collision(Shape s1, Shape s2, Point2f intersection){
         this.s1 = s1;
         this.s2 = s2;
         this.intersection = intersection;
     }
-    public Shape getS1(){
+    Shape getS1(){
         return s1;
     }
-    public Shape getS2(){
+    Shape getS2(){
         return s2;
     }
-    public Point2f getP(){
+    Point2f getP(){
         return intersection;
     }
+    //Provide a comparator so that we can see if two collisions are between the same shapes
     @Override
     public boolean equals(Object obj){
         if (obj == null) {

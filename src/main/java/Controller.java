@@ -184,6 +184,7 @@ public class Controller {
                 model.setGameOver(false);
                 model.setGameStarted(false);
                 model.setCurrentLevel(new Level(3, 4, 10, 140, 95, 60, 40));
+                model.resetLevelNum();
             }
         }
         else {

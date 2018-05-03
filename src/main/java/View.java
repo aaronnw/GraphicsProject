@@ -1,23 +1,20 @@
 import com.jogamp.opengl.*;
-import com.jogamp.opengl.glu.GLU;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Point2f;
-import javax.vecmath.Vector2d;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
 import com.jogamp.opengl.util.awt.TextRenderer;
 
 
 /**
- * Created by Aaron on 3/9/2018.
+ * The view for MVC
+ * Handles all of the opengl drawing, event handling, etc.
  */
-public class View implements GLEventListener, MouseListener, Observer {
+public class View implements GLEventListener, MouseListener{
     private int	w;
     private int	h;
     private Controller controller;
@@ -57,12 +54,17 @@ public class View implements GLEventListener, MouseListener, Observer {
         setPixelProjection(gl, drawable);
         processLevel(gl, drawable);
     }
-    private void	setPixelProjection(GL2 gl, GLAutoDrawable drawable)
-    {
+    private void setPixelProjection(GL2 gl, GLAutoDrawable drawable){
         gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
         gl.glOrtho(0, drawable.getSurfaceWidth(), drawable.getSurfaceHeight(),0, 0,1);
     }
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    /***
+     * Draw methods
+     * Each of these uses the GL2 object and calls the appropriate draw methods on each object in the model
+     */
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     private void drawTargetArea(GL2 gl){
         gl.glColor3f(Color.WHITE.getR(), Color.WHITE.getG(), Color.WHITE.getB());
         gl.glLineWidth(5);
@@ -173,26 +175,9 @@ public class View implements GLEventListener, MouseListener, Observer {
         }
     }
 
-
-    private ArrayList<Point2d> generateLightning(double x1,double y1, double x2,double y2,int z){
-        ArrayList<Point2d> lightning = new ArrayList<Point2d>();
-        if (z < 3) {
-            lightning.add(new Point2d(x1,y1));
-            lightning.add(new Point2d(x2,y2));
-        }
-        else {
-            double mid_x = (x2+x1)/2;
-            double mid_y = (y2+y1)/2;
-            mid_x += (Math.random()-.5)*z;
-            mid_y += (Math.random()-.5)*z;
-            generateLightning(x1,y1,mid_x,mid_y,z/2);
-            generateLightning(x2,y2,mid_x,mid_y,z/2);
-        }
-        return lightning;
-    }
-
     /**
-        Created by Taylor Humphrey
+        Level Handling
+        Checks where we are at in the game and draws the appropriate things
      */
     private void processLevel(GL2 gl, GLAutoDrawable drawable){
         // view that shows when the game begins
@@ -221,66 +206,83 @@ public class View implements GLEventListener, MouseListener, Observer {
 
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    /***
+     * Level methods
+     * Each of these uses the GL2 object and draws a simple menu with an improvised "button"
+     */
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public void drawStartMenu(GL2 gl, GLAutoDrawable drawable){
-        renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 38));
+        Font gameStartFont = new Font("Verdana", Font.PLAIN, 38);
+        Font buttonFont = new Font("Verdana", Font.BOLD, 30);
+
+        renderer = new TextRenderer(gameStartFont);
         renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
         renderer.setColor(1.0f, 1.0f, 0, 1.0f);
         renderer.draw("Welcome to Click-Tap-Match!", w/2 - 240, h/2 + 150);
         renderer.endRendering();
 
-        Square beginButton = new Square(w/2,h/2, 150);
+        Square beginButton = new Square(w/2,h/2 + 20, 220);
         model.setBeginButton(beginButton);
         beginButton.update(gl);
 
-        renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 30));
+        renderer = new TextRenderer(buttonFont);
         renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
         renderer.setColor(0.0f, 0.0f, 0.0f, 1.0f);
-        renderer.draw("Begin", w/2-43, h/2-5);
+        renderer.draw("Begin", w/2-43, h/2-20);
         renderer.endRendering();
     }
 
     public void drawNewLevelMenu(GL2 gl, GLAutoDrawable drawable){
-        renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 38));
+        Font newLevelFont = new Font("Verdana", Font.PLAIN, 38);
+        Font buttonFont = new Font("Verdana", Font.PLAIN, 30);
+
+        renderer = new TextRenderer(newLevelFont);
         renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
         renderer.setColor(1.0f, 1.0f, 0, 1.0f);
-        renderer.draw("Congratulation! You have completed level: " + model.getLevelNum(), w/2 - 400, h/2 + 150);
+        renderer.draw("Congratulations! You have completed level " + model.getLevelNum(), w/2 - 400, h/2 + 150);
         renderer.endRendering();
 
         model.getBeginButton().update(gl);
 
-        renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 20));
+        renderer = new TextRenderer(buttonFont);
         renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
         renderer.setColor(0.0f, 0.0f, 0.0f, 1.0f);
-        renderer.draw("Continue", w/2-43, h/2-5);
+        renderer.draw("Continue", w/2-70, h/2 - 30);
         renderer.endRendering();
     }
 
     public void drawGameOverMenu(GL2 gl, GLAutoDrawable drawable){
-        renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 38));
+        Font gameOverFont = new Font("Verdana", Font.PLAIN, 38);
+        Font buttonFont = new Font("Verdana", Font.PLAIN, 30);
+        Font finalScoreFont = new Font("Verdana", Font.PLAIN, 25);
+
+        renderer = new TextRenderer(gameOverFont);
         renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
         renderer.setColor(1.0f, 1.0f, 0, 1.0f);
-        renderer.draw("Oh no! You lost.", w/2 - 130, h/2 + 150);
+        renderer.draw("GAME OVER", w/2 - 110, h/2 + 150);
         renderer.endRendering();
 
-        Square beginButton = new Square(w/2,h/2, 150);
-        model.setBeginButton(beginButton);
-        beginButton.update(gl);
+        model.getBeginButton().update(gl);
 
-        renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 28));
+        renderer = new TextRenderer(buttonFont);
         renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
         renderer.setColor(0.0f, 0.0f, 0.0f, 1.0f);
-        renderer.draw("Restart", w/2-53, h/2-5);
+        renderer.draw("Restart", w/2-53, h/2-20);
         renderer.endRendering();
 
-        renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 25));
+        renderer = new TextRenderer(finalScoreFont);
         renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
         renderer.setColor(1.0f, 1.0f, 0, 1.0f);
-        renderer.draw("Final Score: " + model.getTotalScore(), w/2 - 70, h/2 + 90);
+        renderer.draw("Final Score: " + model.getTotalScore(), w/2 - 85, h/2 + 90);
         renderer.endRendering();
     }
 
     public void drawScore(GL2 gl, GLAutoDrawable drawable){
-        renderer = new TextRenderer(new Font("Verdana", Font.PLAIN, 38));
+        Font scoreFont = new Font("Verdana", Font.PLAIN, 38);
+
+        renderer = new TextRenderer(scoreFont);
         renderer.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
         renderer.setColor(1.0f, 1.0f, 0, 1.0f);
         renderer.draw("Score: " + model.getTotalScore(), w/2-100, h/2+450);
@@ -307,6 +309,7 @@ public class View implements GLEventListener, MouseListener, Observer {
     public void mouseClicked(MouseEvent e) {
     }
 
+    //Processes when a user clicks in the area
     public void mousePressed(MouseEvent e) {
         controller.processClick(new Point2f(e.getX(), e.getY()));
     }
@@ -321,8 +324,5 @@ public class View implements GLEventListener, MouseListener, Observer {
 
     public void mouseExited(MouseEvent e) {
 
-    }
-
-    public void update(Observable o, Object arg) {
     }
 }

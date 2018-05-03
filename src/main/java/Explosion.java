@@ -5,14 +5,14 @@ import javax.vecmath.Vector2d;
 import java.util.ArrayList;
 
 /**
- * Created by Aaron on 3/9/2018.
+ * Extends the shape class to override the points and drawing, creating a short explosion
  */
 public class Explosion extends Shape {
 
-    float count = 0;
-    float duration = 12;
+    private float count = 0;
+    private float duration = 12;
 
-    public Explosion(Shape s){
+    Explosion(Shape s){
         this.x = s.getX();
         this.y = s.getY();
         this.size = s.getSize();
@@ -24,6 +24,10 @@ public class Explosion extends Shape {
         populateVectors();
     }
 
+    /**
+     * Draw like a normal shape, but with random colors
+     * @param gl
+     */
     @Override
     public void draw(GL2 gl){
         int originalSize = size;
@@ -56,6 +60,7 @@ public class Explosion extends Shape {
         size = originalSize;
     }
 
+    //Add a randomness to the points of the shape, to provide a jagged effect
     @Override
     public void populatePoints(){
         points = new ArrayList<Point2f>();
@@ -72,8 +77,8 @@ public class Explosion extends Shape {
     public Circle makeCopy(){
         return new Circle(x, y, size, direction, speed, color);
     }
-
-    public boolean isFinished(){
+    //Check if we should remove the explosion yet
+    boolean isFinished(){
         if(count > duration){
             return  true;
         }else{

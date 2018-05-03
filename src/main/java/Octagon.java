@@ -1,7 +1,7 @@
 import javax.vecmath.Vector2d;
 
 /**
- * Created by Aaron on 3/9/2018.
+ * This class extends shape, but provides some variables specific to this shape type
  */
 public class Octagon extends Shape {
 
