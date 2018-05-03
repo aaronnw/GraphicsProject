@@ -327,7 +327,7 @@ public class Controller {
         for(Shape s:explodedShapes){
             //If it's the only one we need to set a new target, and the player loses a life
             if(isOnlyMatch(s)){
-                model.setLives(model.getCurrentLevel().getLives()-1);
+                model.removeLife();
                 normalShapes.remove(s);
                 setTarget();
             }else {

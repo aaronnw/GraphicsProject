@@ -84,7 +84,7 @@ public class View implements GLEventListener, MouseListener{
         gl.glLineWidth(5);
         float startX = 40;
         float startY = playAreaTop - 75;
-        for(int i=0; i < model.getCurrentLevel().getLives(); i++) {
+        for(int i=0; i < model.getLives(); i++) {
             drawHeart(gl, startX, startY);
             startX += 70;
         }
