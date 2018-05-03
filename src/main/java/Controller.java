@@ -172,6 +172,7 @@ public class Controller {
                         model.getCurrentLevel().getMinShapeSize() - 3 * model.getLevelNum(), model.getCurrentLevel().getMaxVel() + 2 * model.getLevelNum(),
                         model.getCurrentLevel().getMinVel());
                 model.setCurrentLevel(newLevel);
+                model.setLives(newLevel.getLives());
                 model.increaseLevelNum();
                 model.resetViewItems();
                 addShapes(model.getCurrentLevel().getNumShapes());
@@ -185,6 +186,7 @@ public class Controller {
                 model.setGameStarted(false);
                 model.setCurrentLevel(new Level(3, 4, 10, 140, 95, 60, 40));
                 model.resetLevelNum();
+                model.setLives(model.getCurrentLevel().getLives());
             }
         }
         else {
@@ -212,8 +214,8 @@ public class Controller {
                     } else {
                         //If it's the wrong shape, remove a life
                         shapeClicked = true;
-                        model.getCurrentLevel().removeLife();
-                        if(model.getCurrentLevel().getLives() < 1){
+                        model.removeLife();
+                        if(model.getLives() < 1){
                             model.setGameOver(true);
                         }
 
