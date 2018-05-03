@@ -21,6 +21,10 @@ public class Level {
         return lives;
     }
 
+    public void removeLife(){
+        lives--;
+    }
+
     public void setLives(int lives) {
         this.lives = lives;
     }
@@ -72,5 +76,6 @@ public class Level {
     public void setMinVel(int minVel) {
         this.minVel = minVel;
     }
+
 
 }

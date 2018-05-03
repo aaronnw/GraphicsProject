@@ -55,7 +55,7 @@ public class Controller {
         canvas.addGLEventListener(view);
         canvas.addMouseListener(view);
         //Create a level to start
-        Level current = new Level(3, 10, 10, 150, 100, 100, 50);
+        Level current = new Level(3, 4, 10, 140, 95, 60, 40);
         model.setCurrentLevel(current);
         model.setLives(current.getLives());
         //Add the shapes to the play area
@@ -156,12 +156,35 @@ public class Controller {
             // if user pressed within the beginButton area
             if(model.getBeginButton().containsPoint(p)){
                 model.setGameStarted(true);
+                model.resetViewItems();
+                model.increaseLevelNum();
+                model.resetScore();
+                addShapes(model.getCurrentLevel().getNumShapes());
+                setTarget();
             }
-
         }
         // will be accessed when a new level is reached
-        else if(model.isNewLevel()){
+        else if(model.isNewLevel()) {
+            if(model.getBeginButton().containsPoint(p)){
+                model.setNewLevel(false);
+                Level newLevel = new Level(model.getCurrentLevel().getLives(), model.getCurrentLevel().getTargetNumber() + 1,
+                        model.getCurrentLevel().getNumShapes() + 1, model.getCurrentLevel().getMaxShapeSize() - 3 * model.getLevelNum(),
+                        model.getCurrentLevel().getMinShapeSize() - 3 * model.getLevelNum(), model.getCurrentLevel().getMaxVel() + 2 * model.getLevelNum(),
+                        model.getCurrentLevel().getMinVel());
+                model.setCurrentLevel(newLevel);
+                model.increaseLevelNum();
+                model.resetViewItems();
+                addShapes(model.getCurrentLevel().getNumShapes());
+                setTarget();
 
+            }
+        }
+        else if(model.isGameOver()){
+            if(model.getBeginButton().containsPoint(p)){
+                model.setGameOver(false);
+                model.setGameStarted(false);
+                model.setCurrentLevel(new Level(3, 4, 10, 140, 95, 60, 40));
+            }
         }
         else {
             Shape target = model.getTarget();
@@ -177,11 +200,22 @@ public class Controller {
                         iter.remove();
                         addShapes(1);
                         setTarget();
+//                        model.increaseScore((model.getLevelNum() * (model.getCurrentLevel().getMaxVel() - model.getCurrentLevel().getMinVel())) / (model.getCurrentLevel().getMaxShapeSize() - model.getCurrentLevel().getMinShapeSize()));
+                        model.increaseScore(10 * model.getLevelNum());
+                        model.increaseItemsClick();
+                        if(model.getItemsClick() == model.getCurrentLevel().getTargetNumber()){
+                            model.resetItemsClick();
+                            model.setNewLevel(true);
+                        }
                         return;
                     } else {
                         //If it's the wrong shape, remove a life
                         shapeClicked = true;
-                        model.removeLife();
+                        model.getCurrentLevel().removeLife();
+                        if(model.getCurrentLevel().getLives() < 1){
+                            model.setGameOver(true);
+                        }
+
                     }
                 }
             }
@@ -292,7 +326,7 @@ public class Controller {
         for(Shape s:explodedShapes){
             //If it's the only one we need to set a new target, and the player loses a life
             if(isOnlyMatch(s)){
-                model.setLives(model.getLives()-1);
+                model.setLives(model.getCurrentLevel().getLives()-1);
                 normalShapes.remove(s);
                 setTarget();
             }else {

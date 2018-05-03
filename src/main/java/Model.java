@@ -20,6 +20,8 @@ public class Model extends Observable{
     private boolean newLevel = false;
     private boolean gameOver = false;
     private int levelNum;
+    private int itemsClick = 0;
+    private int totalScore = 0;
 
     public Model(){
         shapes =  new ArrayList<Shape>();
@@ -107,6 +109,37 @@ public class Model extends Observable{
         this.levelNum = levelNum;
     }
 
+    public void increaseItemsClick(){
+        itemsClick++;
+    }
+
+    public int getItemsClick(){
+        return itemsClick;
+    }
+
+    public void resetItemsClick(){
+        itemsClick = 0;
+    }
+
+    public void increaseScore(int score){
+        totalScore = totalScore + score;
+    }
+
+    public int getTotalScore() {
+        return totalScore;
+    }
+
+    public void resetScore(){
+        totalScore = 0;
+    }
+
+    public void increaseLevelNum(){
+        levelNum++;
+    }
+    public void resetLevelNum(){
+        levelNum = 0;
+    }
+
     public Shape getBeginButton() {
         return beginButton;
     }
@@ -117,6 +150,10 @@ public class Model extends Observable{
 
     public boolean isGameOver() {
         return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver){
+        this.gameOver = gameOver;
     }
 
     public ArrayList<Collision> getCollisionList() {
@@ -142,5 +179,12 @@ public class Model extends Observable{
 
     public ArrayList<Explosion> getExplosions() {
         return explosions;
+    }
+
+    public void resetViewItems(){
+        shapes.clear();
+        bubbles.clear();
+        sparks.clear();
+        explosions.clear();
     }
 }
